@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Game, Question, Answer
-from django.db import transaction
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -22,19 +21,26 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ['title', 'questions']
+        fields = ['id', 'title', 'questions']
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions')
-        # Создаем игру
-        game = Game.objects.create(**validated_data)
 
-        # Создаем вопросы и ответы
+        # Защита: если request почему-то не пришел, берем None
+        request = self.context.get('request')
+        user = request.user if request else None
+
+        game = Game.objects.create(created_by=user, **validated_data)
+
         for q_data in questions_data:
+            # Извлекаем ответы из данных вопроса
             answers_data = q_data.pop('answers')
             question = Question.objects.create(game=game, **q_data)
+
+            # Создаем объекты ответов
             for a_data in answers_data:
                 Answer.objects.create(question=question, **a_data)
+
         return game
 
     def update(self, instance, validated_data):
@@ -42,8 +48,6 @@ class GameSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.save()
 
-        # Простой способ обновления вложенных данных:
-        # Удаляем старые вопросы и создаем новые
         instance.questions.all().delete()
         for question_data in questions_data:
             answers_data = question_data.pop('answers')
