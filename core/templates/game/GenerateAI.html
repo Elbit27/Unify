@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'game/css/GenerateAI.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ai-page-wrapper">
+    <div class="glass-card">
+        <h1 class="ai-title">AI Quiz Generator</h1>
+        <p class="ai-subtitle">Доверьте создание вопросов искусственному интеллекту</p>
+
+        <form id="aiForm" class="row g-3 justify-content-center">
+            {% csrf_token %} <div class="col-md-8">
+                <input type="text" id="topic" class="form-control form-control-lg" placeholder="На какую тему создадим тест?" required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" id="count" class="form-control form-control-lg" placeholder="Кол-во" value="5" min="1" max="20">
+            </div>
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn-ai" id="submitBtn">Начать генерацию</button>
+            </div>
+        </form>
+
+        <div id="loader" class="mt-4">
+            <div class="spinner-inner"></div>
+            <p class="loading-text">Нейросеть анализирует тему и подбирает вопросы...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'game/js/GenerateAI.js' %}"></script>
+{% endblock %}

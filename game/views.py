@@ -17,7 +17,8 @@ def play_game(request, game_id):
     # Мы передаем игру, а вопросы подтянем через сериализатор или прямо в шаблоне
     return render(request, 'game/PlayGame.html', {'game': game})
 
-
+def ai_generate_page(request):
+    return render(request, 'game/GenerateAI.html')
 
 # Эта функция НУЖНА для отображения страницы конструктора
 def game_manage_page(request, pk=None):

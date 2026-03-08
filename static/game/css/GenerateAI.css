@@ -1,0 +1,90 @@
+/* Обёртка для страницы, чтобы занять всё свободное место под шапкой */
+.ai-page-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    /* Если хочешь оставить градиент только для этой страницы: */
+    background: radial-gradient(circle at top right, #4e54c8, #8f94fb);
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    max-width: 700px;
+    width: 100%;
+    color: white;
+}
+
+.ai-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.ai-subtitle {
+    font-size: 1.1rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Стили полей ввода */
+.glass-card .form-control {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    border-radius: 10px;
+}
+
+.glass-card .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-ai {
+    background: #ffffff;
+    color: #4e54c8;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 40px;
+    border-radius: 50px;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-ai:hover {
+    background: #4e54c8;
+    color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+/* Лоадер */
+#loader {
+    display: none;
+}
+
+.spinner-inner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.1);
+    border-top: 6px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
