@@ -3,6 +3,7 @@ from .ai_services import generate_game_data
 from .models import Game, Question, Answer
 from django.contrib.auth import get_user_model
 import random
+from core.models import Notification
 
 User = get_user_model()
 
@@ -46,6 +47,10 @@ def generate_game_async(topic, count, user_id):
         game.save()
 
         print(f"--- [SUCCESS] Игра готова! PIN-код: {game.pin_code} ---")
+        Notification.objects.create(
+            user=user,
+            message=f"Ваша игра '{game.title}' готова! PIN: {game.pin_code}"
+        )
         return f"Успех: {game.title} (PIN: {game.pin_code})"
 
     except User.DoesNotExist:

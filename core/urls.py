@@ -1,6 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+
+# Создаем роутер и регистрируем в нем наш ViewSet
+router = DefaultRouter()
+router.register(r'notifications', views.NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path('', views.frontpage, name='frontpage'),
+    # Подключаем все пути роутера (это создаст /api/notifications/, /api/notifications/unread/ и т.д.)
+    path('api/', include(router.urls)),
 ]
