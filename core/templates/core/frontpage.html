@@ -16,11 +16,11 @@
             <p>Создавайте викторины, разделяйте коллег на команды и узнайте, кто в вашей компании настоящий знаток.</p>
         <div class="cta-group">
             {% if user.is_authenticated %}
-                <a href="{% url 'game-list-html' %}" class="btn btn-primary">Играть</a>
+                <a href="{% url 'join_page' %}" class="btn btn-primary">Играть</a>
                 <a href="#about" class="btn btn-secondary">Узнать больше</a>
             {% else %}
                 <!-- НЕ авторизован -->
-                <a href="{% url 'account_login' %}?next={% url 'game-list-html' %}" class="btn btn-primary">Играть</a>
+                <a href="{% url 'account_login' %}?next={% url 'frontpage' %}" class="btn btn-primary">Играть</a>
                 <a href="#about" class="btn btn-secondary">Узнать больше</a>
             {% endif %}
         </div>

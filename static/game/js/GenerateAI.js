@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (response.ok) {
                     // Редирект на список игр
-                    window.location.href = "/game/game_list/";
+                    window.location.href = "/";
                 } else {
                     const data = await response.json();
                     alert('Ошибка ИИ: ' + JSON.stringify(data.error));

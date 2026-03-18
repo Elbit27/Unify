@@ -1,11 +1,11 @@
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.viewsets import ModelViewSet
 from . import serializers
 from .models import Game
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .tasks import generate_quiz_async
+from .tasks import generate_game_async
 
 
 def game_list(request):
@@ -19,6 +19,9 @@ def play_game(request, game_id):
 
 def ai_generate_page(request):
     return render(request, 'game/GenerateAI.html')
+
+def join_by_code_page(request):
+    return render(request, 'game/JoinGame.html')
 
 # Эта функция НУЖНА для отображения страницы конструктора
 def game_manage_page(request, pk=None):
@@ -61,7 +64,7 @@ class GameViewSet(ModelViewSet):
         count = input_serializer.validated_data.get('count')
 
         try:
-            generate_quiz_async.delay(topic, count, request.user.id)
+            generate_game_async.delay(topic, count, request.user.id)
 
             return Response({
                 "message": "Генерация теста началась в фоновом режиме.",
@@ -70,3 +73,19 @@ class GameViewSet(ModelViewSet):
 
         except Exception as e:
             return Response({"error": f"Не удалось запустить задачу: {str(e)}"}, status=500)
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def join_by_code(self, request):
+        code = request.data.get('pin_code')
+        if not code:
+            return Response({"error": "Введите код"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Ищем игру по коду. Важно: только активную!
+            game = Game.objects.get(pin_code=code, is_active=True)
+            return Response({
+                "game_id": game.id,
+                "title": game.title
+            }, status=status.HTTP_200_OK)
+        except Game.DoesNotExist:
+            return Response({"error": "Игра не найдена или еще не готова"}, status=status.HTTP_404_NOT_FOUND)

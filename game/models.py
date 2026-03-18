@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+import random
+import string
 
 
 class Game(models.Model):
@@ -11,9 +13,23 @@ class Game(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=False)
+    pin_code = models.CharField(max_length=6, unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pin_code:
+            self.pin_code = self.generate_unique_pin()
+        super().save(*args, **kwargs)
+
+    def generate_unique_pin(self):
+        while True:
+            code = ''.join(random.choices(string.digits, k=6))
+            if not Game.objects.filter(pin_code=code).exists():
+                return code
 
     def __str__(self):
-        return self.title
+        # Теперь в админке будет: "История Рима (Код: 123456) | Автор: admin"
+        status = "✅" if self.is_active else "⏳"
+        return f"{status} {self.title} (Код: {self.pin_code}) | Автор: {self.created_by.username}"
 
 
 class Question(models.Model):
@@ -26,7 +42,8 @@ class Question(models.Model):
     image = models.ImageField(upload_to='questions/', blank=True, null=True)
 
     def __str__(self):
-        return self.text[:50]
+        # Показываем, к какому квизу относится вопрос
+        return f"Вопрос из '{self.game.title}': {self.text[:30]}..."
 
 
 class Answer(models.Model):
@@ -39,4 +56,5 @@ class Answer(models.Model):
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.text
+        mark = "✔" if self.is_correct else "✖"
+        return f"{mark} {self.text}"

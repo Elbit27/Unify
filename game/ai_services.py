@@ -9,26 +9,28 @@ CLEAN_KEY = re.sub(r'[^a-zA-Z0-9_\-]', '', RAW_KEY)
 client = genai.Client(api_key=CLEAN_KEY)
 
 
-def generate_quiz_data(topic, count):
+def generate_game_data(topic, count):
     prompt = f"""
-        Create a quiz about "{topic}" with {count} questions.
-        RETURN ONLY JSON. 
-        JSON STRUCTURE:
-        {{
-            "title": "Topic Name",
-            "questions": [
-                {{
-                    "text": "Question text here?",
-                    "answers": [
-                        {{"text": "Correct answer", "is_correct": true}},
-                        {{"text": "Wrong answer 1", "is_correct": false}},
-                        {{"text": "Wrong answer 2", "is_correct": false}},
-                        {{"text": "Wrong answer 3", "is_correct": false}}
-                    ]
-                }}
-            ]
-        }}
-        """
+            Create a quiz about "{topic}" with {count} questions.
+            Each question must have exactly 4 answers.
+            CRITICAL: The correct answer MUST be at a RANDOM position (1st, 2nd, 3rd, or 4th) for every single question. Do not always put it first.
+
+            RETURN ONLY JSON:
+            {{
+                "title": "Topic Name",
+                "questions": [
+                    {{
+                        "text": "Question text?",
+                        "answers": [
+                            {{"text": "answer text", "is_correct": boolean}},
+                            {{"text": "answer text", "is_correct": boolean}},
+                            {{"text": "answer text", "is_correct": boolean}},
+                            {{"text": "answer text", "is_correct": boolean}}
+                        ]
+                    }}
+                ]
+            }}
+            """
 
     try:
         # ВАЖНО: берем модель ровно так, как она написана в твоем списке,

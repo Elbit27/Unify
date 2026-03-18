@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="mb-4">Вход в игру</h1>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form id="joinForm">
+                        <div class="mb-3">
+                            <input type="text"
+                                   id="pinCode"
+                                   class="form-control form-control-lg text-center"
+                                   placeholder="Введите PIN-код"
+                                   maxlength="6"
+                                   style="font-size: 2rem; letter-spacing: 5px;">
+                        </div>
+                        <button type="button" onclick="submitPin()" class="btn btn-primary btn-lg w-100">
+                            Присоединиться
+                        </button>
+                    </form>
+                    <div id="errorMessage" class="text-danger mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function submitPin() {
+    const pin = document.getElementById('pinCode').value;
+    const errorDiv = document.getElementById('errorMessage');
+
+    // Делаем запрос к твоему API (ViewSet)
+    const response = await fetch('/game/join_by_code/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}' // Не забудь про CSRF!
+        },
+        body: JSON.stringify({ pin_code: pin })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        // Если код верный, перенаправляем на страницу игры
+        window.location.href = `/game/play_game/${data.game_id}/`;
+    } else {
+        // Если код неверный, показываем ошибку
+        errorDiv.textContent = data.error;
+        errorDiv.style.display = 'block';
+    }
+}
+</script>
+{% endblock %}

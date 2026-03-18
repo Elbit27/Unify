@@ -87,6 +87,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('score-b').innerText = data.scores.B;
             renderQuestion();
         }
+        else if (data.type === 'GAME_OVER') {
+            console.log("🏁 Игра официально окончена сервером");
+            // Обновляем финальный счет перед показом
+            document.getElementById('score-a').innerText = data.scores.A;
+            document.getElementById('score-b').innerText = data.scores.B;
+            if (data.player_stats) playerStats = data.player_stats;
+
+            // Вызываем твою функцию, которая рисует таблицу лидеров
+            showResults();
+        }
     };
 
     const startBtn = document.getElementById('start-now-btn');

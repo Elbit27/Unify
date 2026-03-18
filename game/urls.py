@@ -13,6 +13,7 @@ urlpatterns = [
     path('game_list/', views.game_list, name='game-list-html'),
     path('play_game/<int:game_id>/', views.play_game, name='play_game'),
     path('generate/', views.ai_generate_page, name='ai-generate-page'),
+    path('join_game/', views.join_by_code_page, name='join_page'),
 
     # Теперь API будет доступно по адресу /game/ и /game/generate_ai/
     path('', include(router.urls)),
