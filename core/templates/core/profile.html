@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Профиль{% endblock %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="play-container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="neon-question-card p-4 text-center h-100">
+                <div class="profile-avatar-container mb-4">
+                    <div class="profile-avatar-neon">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                </div>
+
+                <h2 class="question-text fs-3 mb-1">{{ user.username }}</h2>
+                <p class="text-blue-400 mb-4" style="color: #38bdf8; opacity: 0.8;">{{ user.email|default:"Email не указан" }}</p>
+
+                <div class="stats-grid mb-4">
+                    <div class="stat-box">
+                        <div class="stat-number">{{ games_count }}</div>
+                        <div class="stat-label">Викторин</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ user.date_joined|date:"Y" }}</div>
+                        <div class="stat-label">В клубе с</div>
+                    </div>
+                </div>
+
+                <a href="{% url 'account_logout' %}" class="btn-logout-neon">
+                    Выйти из системы
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <h3 class="question-text fs-4 mb-0" style="text-align: left;">Мои проекты</h3>
+                <a href="{% url 'game-create' %}" class="answer-btn py-2 px-4 shadow-sm" style="font-size: 0.9rem; text-decoration: none;">
+                    + Создать игру
+                </a>
+            </div>
+
+            <div class="game-list-container">
+                {% if games %}
+                    {% for game in games %}
+                    <div class="game-item-neon mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div class="game-info-block">
+                                <h5 class="fw-bold mb-2" style="color: #fff; font-size: 1.25rem;">{{ game.title }}</h5>
+                                <div class="d-flex gap-2">
+                                    <span class="live-score-badge py-1 px-3" style="font-size: 0.8rem;">PIN: {{ game.pin_code }}</span>
+                                    <span class="badge-questions">
+                                        <i class="bi bi-layers"></i> {{ game.questions.count }} вопр.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="game-actions-block d-flex gap-2">
+                                <a href="{% url 'game-update' game.id %}" class="btn-action-outline">
+                                    ✏️ Правка
+                                </a>
+                                <a href="{% url 'play_game' game.id %}" class="answer-btn py-2 px-3" style="font-size: 0.9rem; text-decoration: none;">
+                                    ▶ Запуск
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state-neon">
+                        <p class="mb-0">Здесь пока пусто. Начните свою историю побед!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

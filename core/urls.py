@@ -8,6 +8,7 @@ router.register(r'notifications', views.NotificationViewSet, basename='notificat
 
 urlpatterns = [
     path('', views.frontpage, name='frontpage'),
+    path('profile/', views.profile_view, name='profile'),
     # Подключаем все пути роутера (это создаст /api/notifications/, /api/notifications/unread/ и т.д.)
     path('api/', include(router.urls)),
 ]

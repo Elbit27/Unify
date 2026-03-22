@@ -4,9 +4,22 @@ from .serializers import NotificationSerializer
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.contrib.auth.decorators import login_required
+from game.models import Game
 
 def frontpage(request):
     return render(request, 'core/frontpage.html')
+
+@login_required
+def profile_view(request):
+    user_games = Game.objects.filter(created_by=request.user).order_by('-created_at')
+
+    context = {
+        'user': request.user,
+        'games': user_games,
+        'games_count': user_games.count(),
+    }
+    return render(request, 'core/profile.html', context)
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet): # Только чтение
     serializer_class = NotificationSerializer

@@ -46,6 +46,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow" aria-labelledby="userDropdown">
                             {% if request.user.is_staff or request.user.is_superuser %}
+                                <li><a class="dropdown-item nav-create-btn" href="{% url 'profile' %}">Профиль</a></li>
                                 <li><a class="dropdown-item nav-create-btn" href="{% url 'game-create' %}">Создать игру</a></li>
                                 <li><hr class="dropdown-divider"></li>
                             {% endif %}
