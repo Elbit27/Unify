@@ -1,0 +1,175 @@
+/* ПАЛИТРА */
+:root {
+    --white: #ffffff;
+    --graphite: #2c3e50;      /* Темно-графитовый */
+    --sky-blue: #3498db;      /* Небесно-голубой */
+    --light-gray: #f8f9fa;
+    --text-muted: #7f8c8d;
+}
+
+.landing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ГЕРОЙ-СЕКЦИЯ */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 100px 0;
+    gap: 50px;
+}
+
+.hero-image {
+    position: relative;
+    perspective: 1000px;
+}
+
+.float-bg {
+    /* Вариант А: Фиксированная ширина в пикселях (например, 300px) */
+    width: 300px;
+    height: auto; /* Высота подстроится автоматически, чтобы сохранить пропорции */
+
+    /* Вариант Б: Относительная ширина в процентах от родителя (например, 50%) */
+    /* width: 50%; */
+    /* height: auto; */
+
+    object-fit: contain;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 500px;
+}
+
+/* КНОПКИ */
+.cta-group {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 14px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--sky-blue);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.btn-outline {
+    border: 2px solid var(--graphite);
+    color: var(--graphite);
+}
+
+.btn-outline:hover {
+    background-color: var(--graphite);
+    color: var(--white);
+}
+
+/* ДЕМО-КАРТОЧКА (Академическая) */
+.academic-card {
+    background: var(--light-gray);
+    padding: 30px;
+    border-left: 5px solid var(--sky-blue);
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    width: 400px;
+}
+
+.status-badge {
+    display: inline-block;
+    background: #e1f5fe;
+    color: var(--sky-blue);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.team-vs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.vs {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar .fill {
+    width: 65%;
+    height: 100%;
+    background: var(--sky-blue);
+}
+
+/* ПРЕИМУЩЕСТВА */
+.features {
+    padding: 80px 0;
+    text-align: center;
+}
+
+.features h2 {
+    margin-bottom: 50px;
+    font-size: 2.2rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.feature-item {
+    padding: 40px;
+    background: var(--white);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-10px);
+    border-color: var(--sky-blue);
+}
+
+.feature-item .icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.feature-item h3 {
+    margin-bottom: 15px;
+    color: var(--graphite);
+}
+
+.feature-item p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}

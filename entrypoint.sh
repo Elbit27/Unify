@@ -1,6 +1,15 @@
 #!/bin/sh
-
 set -e
 
+echo "--> Running Migrations..."
+python manage.py migrate --noinput
+
+echo "--> Collecting Staticfiles..."
+python manage.py collectstatic --noinput
+
+echo "--> Starting Celery Worker in background..."
+celery -A config worker --loglevel=info &
+
 echo "--> Starting Server with Daphne..."
-exec daphne -b 0.0.0.0 -p $PORT config.asgi:application
+# Указываем порт 8000 напрямую вместо переменной $PORT
+exec daphne -b 0.0.0.0 -p 8000 config.asgi:application

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Подтвердите Email - Victorina{% endblock %}
+{% block title %}Подтвердите Email - Unify{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
@@ -24,6 +24,13 @@
         font-weight: bold;
         color: #1c1e21;
     }
+
+    .login-btn {
+        display: block;
+        width: fit-content;
+        margin: 0 auto;
+        text-decoration: none;
+    }
 </style>
 {% endblock %}
 
@@ -31,8 +38,7 @@
 <div class="login-wrapper">
     <div class="form-section">
         <div class="login-card verification-card">
-            <h1 class="brand-logo" style="font-size: 36px;">victorina</h1>
-
+            <h1 class="brand-logo">unify<span>academy</span></h1>
             <div class="verification-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#0866ff" class="bi bi-envelope-check" viewBox="0 0 16 16">
                     <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z"/>
@@ -43,8 +49,7 @@
             <h2 style="font-size: 24px; margin-bottom: 10px;">Проверьте вашу почту</h2>
 
             <p class="subtitle" style="text-align: center;">
-                Мы отправили письмо для подтверждения на адрес:<br>
-                <span class="email-highlight">{{ email }}</span>
+                Мы отправили письмо на указанную вами почту
             </p>
 
             <div class="form-divider"></div>
@@ -54,7 +59,7 @@
                 Если письма нет в папке «Входящие», проверьте папку «Спам».
             </p>
 
-            <a href="{% url 'account_login' %}" class="login-btn" style="text-decoration: none; display: block;">
+            <a href="{% url 'account_login' %}" class="login-btn">
                 Вернуться ко входу
             </a>
 
