@@ -10,15 +10,24 @@ from game.models import Game
 def frontpage(request):
     return render(request, 'core/frontpage.html')
 
+
 @login_required
 def profile_view(request):
-    user_games = Game.objects.filter(created_by=request.user).order_by('-created_at')
+    user = request.user
+    user_games = Game.objects.filter(created_by=user).order_by('-created_at')
+    all_grades = user.grades.all().select_related('subject')
+
+    print(f"DEBUG: Юзер {user.username} (ID: {user.id})")
+    print(f"DEBUG: Оценок найдено: {all_grades.count()}")
 
     context = {
-        'user': request.user,
+        'user': user,
         'games': user_games,
         'games_count': user_games.count(),
+        'grades_sem1': all_grades.filter(semester=1),
+        'grades_sem2': all_grades.filter(semester=2),
     }
+
     return render(request, 'core/profile.html', context)
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet): # Только чтение

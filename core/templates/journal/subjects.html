@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Мои дисциплины</h2>
+    <div class="mb-4">
+        <form method="GET" class="d-flex gap-3">
+            <select name="year" class="form-select" onchange="this.form.submit()">
+                {% for y in years_range %}
+                    <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}-{{ y|add:1 }} уч. год</option>
+                {% endfor %}
+            </select>
+
+            <select name="semester" class="form-select" onchange="this.form.submit()">
+                <option value="1" {% if current_semester == 1 %}selected{% endif %}>1 семестр (Осень)</option>
+                <option value="2" {% if current_semester == 2 %}selected{% endif %}>2 семестр (Весна)</option>
+            </select>
+        </form>
+    </div>
+    <div class="row g-4">
+        {% for subject in subjects %}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex flex-column justify-content-between text-center">
+                    <div class="py-4">
+                        <i class="bi bi-book display-4 text-primary mb-3"></i>
+                        <h5 class="card-title fw-bold">{{ subject.name }}</h5>
+                    </div>
+                    <a href="{% url 'journal-groups' subject.id %}" class="btn btn-primary rounded-pill">Выбрать группы</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">За вами не закреплено ни одного предмета.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

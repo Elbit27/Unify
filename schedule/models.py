@@ -1,9 +1,12 @@
 from django.db import models
 from django.conf import settings
 
-
 class Campus(models.Model):
     number = models.CharField(max_length=27, verbose_name="Корпус")
+
+    class Meta:
+        verbose_name = "Корпус"
+        verbose_name_plural = "Корпуса"
 
     def __str__(self):
         return self.number
@@ -13,20 +16,15 @@ class Room(models.Model):
     number = models.CharField(max_length=999, verbose_name="Номер аудитории")
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE, related_name="rooms")
 
+    class Meta:
+        verbose_name = "Аудитория"
+        verbose_name_plural = "Аудитории"
+
     def __str__(self):
         return f"{self.number} ({self.campus.number})"
 
 
 class Lesson(models.Model):
-    DAYS_OF_WEEK = (
-        (1, 'Понедельник'),
-        (2, 'Вторник'),
-        (3, 'Среда'),
-        (4, 'Четверг'),
-        (5, 'Пятница'),
-        (6, 'Суббота'),
-    )
-
     LESSON_TIMES = (
         (1, '08:00 – 09:20'),
         (2, '09:30 – 10:50'),
@@ -34,21 +32,31 @@ class Lesson(models.Model):
         (4, '12:30 – 13:50'),
     )
 
-    subject = models.ForeignKey('users.Subject', on_delete=models.CASCADE, verbose_name="Предмет")
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                limit_choices_to={'role': 'teacher'}, verbose_name="Преподаватель")
-    group = models.ForeignKey('users.Group', on_delete=models.CASCADE, verbose_name="Группа")
+    course = models.ForeignKey('users.SemesterSubject', on_delete=models.CASCADE, related_name='lessons', verbose_name="Курс")
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, verbose_name="Кабинет")
 
-    # Время
-    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, verbose_name="День недели")
+    date = models.DateField(verbose_name="Дата занятия")
     lesson_number = models.IntegerField(choices=LESSON_TIMES, verbose_name="Пара №")
 
     class Meta:
-        verbose_name = "Занятие"
-        verbose_name_plural = "Занятия"
-        # Чтобы нельзя было поставить две разные пары в один кабинет в одно время
-        unique_together = ('room', 'day_of_week', 'lesson_number')
+        verbose_name = "Занятие (факт)"
+        verbose_name_plural = "Занятия (факты)"
+        unique_together = ('room', 'date', 'lesson_number')
 
     def __str__(self):
-        return f"{self.get_day_of_week_display()} | Пара №{self.lesson_number} | {self.subject.name}"
+        return f"{self.date} | Пара №{self.lesson_number} | {self.course.subject.name} ({self.course.group.name})"
+
+
+# class Attendance(models.Model):
+#     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='attendances')
+#     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Студент")
+#     is_present = models.BooleanField(default=False, verbose_name="Присутствует")
+#
+#     class Meta:
+#         verbose_name = "Посещаемость"
+#         verbose_name_plural = "Посещаемость"
+#         unique_together = ('lesson', 'student')
+#
+#     def __str__(self):
+#         status = "Был" if self.is_present else "Н"
+#         return f"{self.student.username} - {status} ({self.lesson.date})"

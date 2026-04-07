@@ -85,49 +85,145 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg-8">
-            <div class="content-header d-flex justify-content-between align-items-center mb-4">
-                <h3 class="section-title h4 mb-0">Мои учебные сессии</h3>
-                <a href="{% url 'game-create' %}" class="btn-create-new btn btn-primary btn-sm rounded-pill px-3">
-                    <i class="bi bi-plus-lg me-2"></i>Создать новую
-                </a>
-            </div>
+            {% if user.role == 'student' %}
+                <div class="content-header d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="section-title h4 mb-0">Моя успеваемость</h3>
+                    <div class="btn-group shadow-sm rounded-pill p-1 bg-white border">
+                        <button class="btn btn-sm btn-primary rounded-pill px-3 active" id="sem1-tab" data-bs-toggle="tab" data-bs-target="#sem1">1 Сем</button>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 border-0" id="sem2-tab" data-bs-toggle="tab" data-bs-target="#sem2">2 Сем</button>
+                    </div>
+                </div>
 
-            <div class="sessions-grid">
-                {% if games %}
-                    {% for game in games %}
-                    <div class="session-card mb-3 p-3 bg-white shadow-sm rounded border">
-                        <div class="row align-items-center g-3">
+                <div class="tab-content" id="semesterTabContent">
+                    <div class="tab-pane fade show active" id="sem1">
+                        <div class="row g-3">
+                            {% for grade in grades_sem1 %}
                             <div class="col-md-6">
-                                <h5 class="session-title mb-1 h6 fw-bold">{{ game.title }}</h5>
-                                <div class="session-meta small text-muted">
-                                    <span class="meta-pin me-3"><i class="bi bi-key me-1"></i>{{ game.pin_code }}</span>
-                                    <span class="meta-qty"><i class="bi bi-layers me-1"></i>{{ game.questions.count }} вопросов</span>
+                                <div class="grade-card p-3 shadow-sm bg-white rounded border-start border-4 border-primary">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="fw-bold mb-0 text-truncate" title="{{ grade.subject.name }}">{{ grade.subject.name }}</h6>
+                                        <span class="badge bg-primary rounded-pill">{{ grade.total_score|floatformat:0 }} / 100</span>
+                                    </div>
+
+                                    <div class="module-progress-bars mt-3">
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Модуль 1 (40%)</span>
+                                                <span>{{ grade.module_1 }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_1 }}%"></div></div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Модуль 2 (40%)</span>
+                                                <span>{{ grade.module_2 }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_2 }}%"></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Экзамен (20%)</span>
+                                                <span>{{ grade.final_exam }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: {{ grade.final_exam }}%"></div></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 text-md-end">
-                                <div class="action-group">
-                                    <a href="{% url 'game-update' game.id %}" class="btn btn-outline-secondary btn-sm me-2">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{% url 'play_game' game.id %}" class="btn btn-primary btn-sm px-4">
-                                        Запустить <i class="bi bi-play-fill ms-1"></i>
-                                    </a>
+                            {% empty %}
+                                <div class="text-center py-5 bg-white rounded shadow-sm border w-100">
+                                    <i class="bi bi-journal-x display-4 text-muted mb-2 d-block"></i>
+                                    <p class="text-muted">Оценок за 1 семестр пока нет</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="sem2">
+                        <div class="row g-3">
+                            {% for grade in grades_sem2 %}
+                            <div class="col-md-6">
+                                <div class="grade-card p-3 shadow-sm bg-white rounded border-start border-4 border-success">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="fw-bold mb-0 text-truncate">{{ grade.subject.name }}</h6>
+                                        <span class="badge bg-success rounded-pill">{{ grade.total_score|floatformat:0 }} / 100</span>
+                                    </div>
+
+                                    <div class="module-progress-bars mt-3">
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Модуль 1 (40%)</span>
+                                                <span>{{ grade.module_1 }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_1 }}%"></div></div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Модуль 2 (40%)</span>
+                                                <span>{{ grade.module_2 }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_2 }}%"></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                                <span>Экзамен (20%)</span>
+                                                <span>{{ grade.final_exam }}</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: {{ grade.final_exam }}%"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                                <div class="text-center py-5 bg-white rounded shadow-sm border w-100">
+                                    <p class="text-muted">Данные за 2 семестр появятся позже</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'teacher' %}
+                <div class="content-header d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="section-title h4 mb-0">Управление сессиями</h3>
+                    <a href="{% url 'game-create' %}" class="btn-create-new btn btn-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-plus-lg me-2"></i>Создать новую
+                    </a>
+                </div>
+
+                <div class="sessions-grid">
+                    {% if games %}
+                        {% for game in games %}
+                        <div class="session-card mb-3 p-3 bg-white shadow-sm rounded border-start border-4 border-success">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-6">
+                                    <h5 class="session-title mb-1 h6 fw-bold text-dark">{{ game.title }}</h5>
+                                    <div class="session-meta small text-muted">
+                                        <span class="me-3"><i class="bi bi-key-fill text-primary me-1"></i>{{ game.pin_code }}</span>
+                                        <span><i class="bi bi-question-circle me-1"></i>{{ game.questions.count }} вопр.</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <a href="{% url 'game-update' game.id %}" class="btn btn-light btn-sm rounded-circle me-2 border"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="{% url 'play_game' game.id %}" class="btn btn-primary btn-sm px-4 rounded-pill">Запустить</a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-sessions text-center py-5 bg-white rounded shadow-sm border">
-                        <i class="bi bi-folder2-open display-4 text-muted mb-3 d-block"></i>
-                        <p class="text-muted">У вас пока нет созданных сессий</p>
-                        <a href="{% url 'game-create' %}" class="btn btn-outline-primary btn-sm mt-2">Создать первую сессию</a>
-                    </div>
-                {% endif %}
-            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-sessions text-center py-5 bg-white rounded shadow-sm border">
+                            <i class="bi bi-controller display-4 text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Вы еще не создали ни одной викторины</p>
+                            <a href="{% url 'game-create' %}" class="btn btn-primary btn-sm px-4 rounded-pill mt-2">Создать сейчас</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<script src="{% static 'core/js/profile.js' %}"></script>
+
 {% endblock %}

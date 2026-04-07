@@ -34,10 +34,22 @@
                                 <span class="badge time-badge">{{ lesson.get_lesson_number_display }}</span>
                                 <span class="lesson-num text-muted small">#{{ lesson.lesson_number }}</span>
                             </div>
-                            <h6 class="subject-name fw-bold mb-1">{{ lesson.subject.name }}</h6>
+                            <h6 class="subject-name fw-bold mb-1">{{ lesson.course.subject.name }}</h6>
                             <div class="details">
-                                <p class="mb-1"><i class="bi bi-person me-2"></i>{{ lesson.teacher.get_full_name|default:lesson.teacher.username }}</p>
-                                <p class="mb-0"><i class="bi bi-geo-alt me-2"></i>каб. {{ lesson.room.number }} ({{ lesson.room.campus.name }})</p>
+                                <p class="mb-1">
+                                    <i class="bi {% if user.role == 'teacher' %}bi-people{% else %}bi-person{% endif %} me-2"></i>
+                                    {% if user.role == 'teacher' %}
+                                        {{ lesson.course.group.name }}
+                                    {% else %}
+                                        {{ lesson.course.teacher.get_full_name|default:lesson.course.teacher.username }}
+                                    {% endif %}
+                                </p>
+
+                                <p class="mb-0">
+                                    <i class="bi bi-geo-alt me-2"></i>
+                                    каб. {{ lesson.room.number }}
+                                    <span class="text-muted small">({{ lesson.room.campus.number }} корпус)</span>
+                                </p>
                             </div>
                         </div>
                         {% endfor %}

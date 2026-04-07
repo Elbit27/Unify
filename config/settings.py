@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'core',
     'game',
     'schedule',
+    'journal',
     'channels',
     # ------------------------
     'django.contrib.sites',

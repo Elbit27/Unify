@@ -14,17 +14,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        # ВАЖНО: Создаем игрока в БД сразу при входе, если его там нет
         if self.user.is_authenticated:
             await database_sync_to_async(self.ensure_player_exists)()
 
-        # Теперь рассылаем обновление — теперь ты точно будешь в списке
         await self.broadcast_room_update()
 
     def ensure_player_exists(self):
         from .models import Player
-        # Проверяем, есть ли уже такой игрок в этой игре
-        Player.objects.get_or_create(user=self.user, game_id=self.game_id)
+        Player.objects.get_or_create(user=self.user, game_id=self.game_id) # Проверяем, есть ли уже такой игрок в этой игре
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -46,16 +43,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.broadcast_room_update()
 
         elif action == 'delete_team':
-            # Проверка прав (только для админов)
-            if self.user.is_staff or self.user.is_superuser:
+            if self.user.role == 'teacher':
                 team_id = data.get('team_id')
                 await database_sync_to_async(self.perform_delete_team)(team_id)
-                # После удаления рассылаем всем актуальный список (уже без этой команды)
                 await self.broadcast_room_update()
 
         if action == 'start_game':
-            if self.user.is_staff or self.user.is_superuser:
-                # Инициализируем чистое состояние игры
+            if self.user.role == 'teacher':
                 self.room_states[self.room_group_name] = {
                     'current_idx': 0,
                     'scores': {},

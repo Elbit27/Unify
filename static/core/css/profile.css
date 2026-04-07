@@ -182,3 +182,15 @@
     border-radius: 20px;
     color: var(--text-muted);
 }
+
+.btn-group .btn.active {
+    background-color: var(--sky-blue) !important;
+    color: white !important;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+}
+.grade-card {
+    transition: 0.3s;
+}
+.grade-card:hover {
+    transform: scale(1.02);
+}

@@ -13,7 +13,7 @@
         <h2 class="mb-4 text-center">Лобби игры: {{ game.title }}</h2>
         <h4 class="mb-4 text-center">Код для входа: {{ game.pin_code }}</h4>
 
-        {% if user.is_staff or user.is_superuser %}
+        {% if user.role == 'teacher' %}
         <div class="admin-panel border p-3 mb-4 rounded bg-light shadow-sm">
             <h5 class="text-dark border-bottom pb-2">Панель ведущего</h5>
             <div class="input-group mb-2">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="mt-5 text-center border-top pt-4">
-            {% if user.is_staff or user.is_superuser %}
+            {% if user.role == 'teacher' %}
                 <button id="start-now-btn" class="launch-btn btn-lg w-100">Запустить битву!</button>
             {% else %}
                 <div class="alert alert-info">
