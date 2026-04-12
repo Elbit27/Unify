@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-6 stat-item">
                         {% if user.role == 'student' and user.group %}
-                            <div class="stat-value text-primary">{{ user.group.course }}</div>
+                            <div class="stat-value text-primary">{{ user.group.current_course }}</div>
                             <div class="stat-label">Курс</div>
                         {% else %}
                             <div class="stat-value text-primary">{{ user.date_joined|date:"Y" }}</div>

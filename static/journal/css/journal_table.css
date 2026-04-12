@@ -1,0 +1,81 @@
+/* Основной контейнер скролла */
+.journal-scroll {
+    overflow: auto;
+}
+
+/* Фиксация колонки с именами */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    min-width: 220px;
+    border-right: 2px solid #dee2e6 !important;
+}
+
+/* Ширина колонок */
+.lesson-th { min-width: 60px; font-size: 0.8rem; }
+.grade-th { min-width: 80px; }
+.total-th { min-width: 70px; }
+
+/* Стиль ячейки НБ */
+.attendance-cell { height: 40px; display: flex; }
+.attendance-label {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: transparent; font-size: 0.7rem; font-weight: bold;
+    transition: 0.2s;
+}
+.attendance-label:hover { background: #f1f1f1; color: #ccc; }
+.btn-check:checked + .attendance-label {
+    background: #ffdbdb; color: #d9534f;
+}
+
+/* Оценки */
+.grade-input {
+    border: none; text-align: center; padding: 2px; background: transparent;
+}
+.grade-input:focus {
+    background: #fffbe6; box-shadow: none;
+}
+
+/* Стили для интерактивных ячеек */
+.journal-cell {
+    transition: background 0.2s;
+    position: relative;
+    min-width: 60px;
+    height: 45px;
+    cursor: pointer;
+}
+.journal-cell:hover { background-color: #f8f9fa !important; }
+
+.attendance-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nb-label {
+    display: none; /* Скрыто, если пропуска нет */
+    color: #d32f2f;
+    font-weight: bold;
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+/* Когда у ячейки есть пропуск */
+.nb-label.active {
+    display: inline-block;
+}
+
+/* Подсветка всей ячейки красным при наличии НБ */
+.journal-cell.has-nb {
+    background-color: #ffebee !important;
+}
+
+/* Убираем стрелочки у input number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.form-control-sm:focus { box-shadow: none; background-color: #fffde7; }
+
+

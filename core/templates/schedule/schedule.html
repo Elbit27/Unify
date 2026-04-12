@@ -23,16 +23,16 @@
                         {% if day_num == 1 %}Понедельник{% elif day_num == 2 %}Вторник{% elif day_num == 3 %}Среда{% elif day_num == 4 %}Четверг{% elif day_num == 5 %}Пятница{% else %}Суббота{% endif %}
                     </h5>
                 </div>
-                
+
                 <div class="day-body p-2">
                     {% if lessons %}
                         {% for lesson in lessons|dictsort:"lesson_number" %}
-                        <div class="lesson-item mb-2 p-3 rounded shadow-sm" 
-                             data-start="{{ lesson.get_lesson_number_display|slice:':5' }}" 
+                        <div class="lesson-item mb-2 p-3 rounded shadow-sm"
+                             data-start="{{ lesson.get_lesson_number_display|slice:':5' }}"
                              data-end="{{ lesson.get_lesson_number_display|slice:'8:' }}">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <span class="badge time-badge">{{ lesson.get_lesson_number_display }}</span>
-                                <span class="lesson-num text-muted small">#{{ lesson.lesson_number }}</span>
+                                <span class="lesson-num text-muted small">{{ lesson.lesson_number }}</span>
                             </div>
                             <h6 class="subject-name fw-bold mb-1">{{ lesson.course.subject.name }}</h6>
                             <div class="details">
@@ -45,10 +45,16 @@
                                     {% endif %}
                                 </p>
 
-                                <p class="mb-0">
+                                <p class="mb-0 small text-muted">
                                     <i class="bi bi-geo-alt me-2"></i>
-                                    каб. {{ lesson.room.number }}
-                                    <span class="text-muted small">({{ lesson.room.campus.number }} корпус)</span>
+                                    <span class="fw-bold text-dark">
+                                        {% if lesson.lesson_type != 'practice' %}
+                                            {{ lesson.get_lesson_type_display|slice:":3" }}.
+                                        {% else %}
+                                            {{ lesson.get_lesson_type_display|slice:":2" }}.
+                                        {% endif %}
+                                    </span>
+                                    (Корпус №{{ lesson.room.campus.number }}, ауд.{{ lesson.room.number }})
                                 </p>
                             </div>
                         </div>

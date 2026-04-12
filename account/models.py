@@ -115,3 +115,7 @@ class SemesterSubject(models.Model):
     class Meta:
         verbose_name = "Предмет плана"
         verbose_name_plural = "Предметы плана"
+
+    def __str__(self):
+        # Это то, что ты увидишь в выпадающем списке
+        return f"{self.subject.name} | {self.plan.group.name} ({self.plan.course_number} курс)"

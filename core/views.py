@@ -16,10 +16,6 @@ def profile_view(request):
     user = request.user
     user_games = Game.objects.filter(created_by=user).order_by('-created_at')
     all_grades = user.grades.all().select_related('subject')
-
-    print(f"DEBUG: Юзер {user.username} (ID: {user.id})")
-    print(f"DEBUG: Оценок найдено: {all_grades.count()}")
-
     context = {
         'user': user,
         'games': user_games,

@@ -1,4 +1,13 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Журнал | Unify Academy{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'journal/css/journal_table.css' %}">
+
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -10,27 +19,28 @@
                     <li class="breadcrumb-item active">Группа {{ group.name }}</li>
                 </ol>
             </nav>
-            <h2 class="h4 mb-0">Ведомость: {{ subject.name }} ({{ group.name }})</h2>
-        </div>
-
-        <div class="btn-group bg-white shadow-sm p-1 rounded-pill">
-            <a href="?semester=1" class="btn btn-sm rounded-pill px-3 {% if semester == 1 %}btn-primary active{% else %}btn-outline-primary border-0{% endif %}">1 Семестр</a>
-            <a href="?semester=2" class="btn btn-sm rounded-pill px-3 {% if semester == 2 %}btn-primary active{% else %}btn-outline-primary border-0{% endif %}">2 Семестр</a>
+            <h2 class="h4 mb-0">Журнал: {{ subject.name }} ({{ group.name }})</h2>
         </div>
     </div>
 
     <div class="card border-0 shadow-sm overflow-hidden">
-        <form method="post">
+        <form method="post" id="journalForm">
             {% csrf_token %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 border", id="attendance-table", data-url="{% url 'update-attendance' %}">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">ФИО Студента</th>
-                            <th style="width: 140px;">Модуль 1</th>
-                            <th style="width: 140px;">Модуль 2</th>
-                            <th style="width: 140px;">Экзамен</th>
-                            <th class="text-center">Итог</th>
+                            <th class="ps-4" style="min-width: 250px;">ФИО Студента</th>
+                            {% for lesson in lessons %}
+                            <th class="text-center border-start" style="min-width: 60px; font-size: 0.75rem;">
+                                {{ lesson.date|date:"d.m" }}<br>
+                                <span class="text-muted small">п.{{ lesson.lesson_number }}</span>
+                            </th>
+                            {% endfor %}
+                            <th class="text-center border-start" style="width: 100px;">Мод. 1</th>
+                            <th class="text-center" style="width: 100px;">Мод. 2</th>
+                            <th class="text-center" style="width: 100px;">Экзамен</th>
+                            <th class="text-center bg-light" style="width: 80px;">Итог</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,25 +48,41 @@
                         <tr>
                             <td class="ps-4">
                                 <span class="fw-medium">{{ student.last_name }} {{ student.first_name }}</span>
-                                <div class="small text-muted">{{ student.username }}</div>
+                                <div class="small text-muted" style="font-size: 0.7rem;">{{ student.username }}</div>
                             </td>
-                            <td>
+
+                            {% for lesson in lessons %}
+                            <td class="text-center border-start p-0 journal-cell {% with s_id=student.id|slugify l_id=lesson.id|slugify %}{% with key=s_id|add:'_'|add:l_id %}{% if key in absent_map %}has-nb{% endif %}{% endwith %}{% endwith %}"
+                                data-student="{{ student.id }}"
+                                data-lesson="{{ lesson.id }}">
+
+                                <div class="attendance-slot">
+                                    {% with s_id=student.id|slugify l_id=lesson.id|slugify %}
+                                    {% with current_key=s_id|add:"_"|add:l_id %}
+                                        <span class="nb-label {% if current_key in absent_map %}active{% endif %}">НБ</span>
+                                    {% endwith %}
+                                    {% endwith %}
+                                </div>
+                            </td>
+                            {% endfor %}
+
+                            <td class="border-start">
                                 <input type="number" step="0.1" name="m1_{{ student.id }}"
-                                       value="{{ student.current_grade.module_1|default:0 }}"
-                                       class="form-control form-control-sm" min="0" max="100">
+                                       value="{{ student.current_grade.module_1|floatformat:1|default:0 }}"
+                                       class="form-control form-control-sm text-center border-0">
                             </td>
                             <td>
                                 <input type="number" step="0.1" name="m2_{{ student.id }}"
-                                       value="{{ student.current_grade.module_2|default:0 }}"
-                                       class="form-control form-control-sm" min="0" max="100">
+                                       value="{{ student.current_grade.module_2|floatformat:1|default:0 }}"
+                                       class="form-control form-control-sm text-center border-0">
                             </td>
                             <td>
                                 <input type="number" step="0.1" name="final_{{ student.id }}"
-                                       value="{{ student.current_grade.final_exam|default:0 }}"
-                                       class="form-control form-control-sm" min="0" max="100">
+                                       value="{{ student.current_grade.final_exam|floatformat:1|default:0 }}"
+                                       class="form-control form-control-sm text-center border-0">
                             </td>
-                            <td class="text-center">
-                                <span class="badge {% if student.current_grade.total_score >= 50 %}bg-success{% else %}bg-secondary{% endif %} rounded-pill px-3">
+                            <td class="text-center bg-light">
+                                <span class="fw-bold {% if student.current_grade.total_score >= 50 %}text-success{% else %}text-secondary{% endif %}">
                                     {{ student.current_grade.total_score|floatformat:1|default:"0.0" }}
                                 </span>
                             </td>
@@ -65,10 +91,12 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="p-3 bg-light border-top text-end">
-                <button type="submit" class="btn btn-success px-5 rounded-pill">Сохранить ведомость</button>
+                <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm">Сохранить оценки</button>
             </div>
         </form>
     </div>
 </div>
+<script src="{% static 'journal/js/journal_table.js' %}"></script>
 {% endblock %}

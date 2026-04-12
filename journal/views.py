@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from account.models import Subject, Group, User, SemesterSubject
-from .models import Grade
+from django.views.decorators.http import require_POST
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count, Q, F
 from django.utils import timezone
-from django.db.models import F
+from django.http import JsonResponse
+from account.models import Subject, Group, User, SemesterSubject
+from schedule.models import Attendance, Lesson
+from .models import Grade
+import json
 
 
 @login_required
@@ -53,50 +56,61 @@ def group_list_view(request, subject_id):
 
 @login_required
 def teacher_journal_view(request, subject_id, group_id):
-    """Шаг 3: Ведомость оценок (Исправлено под новую структуру)"""
     subject = get_object_or_404(Subject, id=subject_id)
     group = get_object_or_404(Group, id=group_id)
-
-    sem_subject = get_object_or_404(
-        SemesterSubject,
-        subject=subject,
-        plan__group=group,
-        teacher=request.user
-    )
+    sem_subject = get_object_or_404(SemesterSubject, subject=subject, plan__group=group, teacher=request.user)
 
     plan = sem_subject.plan
-    semester = int(request.GET.get('semester', plan.semester))
-    students = User.objects.filter(group=group, role='student').order_by('last_name')
+    semester = plan.semester
 
-    if request.method == 'POST':
-        for student in students:
-            m1 = request.POST.get(f'm1_{student.id}', 0)
-            m2 = request.POST.get(f'm2_{student.id}', 0)
-            final = request.POST.get(f'final_{student.id}', 0)
+    students = User.objects.filter(group=group, role='student').annotate(
+        absent_count=Count(
+            'attendances',
+            filter=Q(attendances__lesson__course__subject=subject, attendances__is_present=False)
+        )
+    ).order_by('last_name')
 
-            Grade.objects.update_or_create(
-                student=student,
-                subject=subject,
-                semester=semester,
-                course=plan.course_number,
-                defaults={
-                    'module_1': float(m1) if m1 else 0,
-                    'module_2': float(m2) if m2 else 0,
-                    'final_exam': float(final) if final else 0,
-                }
-            )
-        messages.success(request, "Ведомость успешно обновлена!")
-        return redirect(request.get_full_path())
+    lessons = Lesson.objects.filter(
+        course__subject=subject,
+        course__plan__group=group
+    ).order_by('date', 'lesson_number')
 
-    grades = Grade.objects.filter(subject=subject, semester=semester, student__group=group)
-    grades_dict = {g.student_id: g for g in grades}
+    absents = Attendance.objects.filter(lesson__in=lessons, is_present=False)
+    absent_map = {f"{a.student_id}_{a.lesson_id}" for a in absents}
 
     for student in students:
-        student.current_grade = grades_dict.get(student.id)
+        student.current_grade = Grade.objects.filter(
+            student=student,
+            subject=subject,
+            semester=semester
+        ).first()
 
     return render(request, 'journal/journal_table.html', {
         'subject': subject,
         'group': group,
         'students': students,
-        'semester': semester
+        'lessons': lessons,
+        'absent_map': absent_map,
     })
+
+@login_required
+@require_POST
+def update_attendance_ajax(request):
+    try:
+        data = json.loads(request.body)
+        student_id = data.get('student_id')
+        lesson_id = data.get('lesson_id')
+        is_absent = data.get('is_absent')
+
+        if is_absent:
+            Attendance.objects.update_or_create(
+                student_id=student_id,
+                lesson_id=lesson_id,
+                defaults={'is_present': False}
+            )
+        else:
+            Attendance.objects.filter(student_id=student_id, lesson_id=lesson_id).delete()
+
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
