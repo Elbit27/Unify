@@ -202,3 +202,4 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 AUTH_USER_MODEL = 'users.User'
+ACCOUNT_ADAPTER = 'account.adapters.CustomAccountAdapter'

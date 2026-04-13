@@ -11,7 +11,7 @@ class CustomAuthenticationForm(AuthenticationForm):
     }
 
 class LoginView(views.LoginView):
-    template_name = 'core/login.html'
+    template_name = 'account/login.html'
     authentication_form = CustomAuthenticationForm
 
 
@@ -24,9 +24,9 @@ def signup(request):
             login(request, user)
             return redirect('/')
         else:
-            return render(request, 'core/signup.html', {
+            return render(request, 'account/signup.html', {
                 'errors': serializer.errors,
                 'form_data': request.POST  # Передаем данные, чтобы они не исчезали
             })
 
-    return render(request, 'core/signup.html')
+    return render(request, 'account/signup.html')

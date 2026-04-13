@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, AuthenticationMethods
+from account import views, AuthenticationMethods
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 
@@ -15,6 +15,7 @@ urlpatterns = [
     path('signup/', AuthenticationMethods.signup, name='account_signup'),
     path('login/', AuthenticationMethods.LoginView.as_view(), name='account_login'),
     path('logout/', custom_logout, name='account_logout'),
+    path('verify_code/', views.verify_code_view, name='account_verify_code'),
     path('complete_profile/', views.complete_profile, name='complete_profile'),
     # path('profile/', views.UserProfileView.as_view(), name='user-profile'),
     # path('profile/<int:pk>/', views.UserProfileView.as_view(), name='user-detail'),

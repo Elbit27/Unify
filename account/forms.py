@@ -4,7 +4,7 @@ from .models import User
 class OnboardingForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['role', 'faculty', 'group', 'department', 'subject']
+        fields = ['role', 'faculty', 'group', 'department', 'subjects']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
