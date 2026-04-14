@@ -58,22 +58,32 @@ def group_list_view(request, subject_id):
 def teacher_journal_view(request, subject_id, group_id):
     subject = get_object_or_404(Subject, id=subject_id)
     group = get_object_or_404(Group, id=group_id)
+
+    # Это ключевой объект: он связывает всё воедино
     sem_subject = get_object_or_404(SemesterSubject, subject=subject, plan__group=group, teacher=request.user)
 
-    plan = sem_subject.plan
-    semester = plan.semester
+    semester = sem_subject.plan.semester
+    students = User.objects.filter(group=group, role='student').order_by('last_name')
 
-    students = User.objects.filter(group=group, role='student').annotate(
-        absent_count=Count(
-            'attendances',
-            filter=Q(attendances__lesson__course__subject=subject, attendances__is_present=False)
-        )
-    ).order_by('last_name')
+    if request.method == 'POST':
+        for student in students:
+            m1 = request.POST.get(f'm1_{student.id}', 0)
+            m2 = request.POST.get(f'm2_{student.id}', 0)
+            final = request.POST.get(f'final_{student.id}', 0)
 
-    lessons = Lesson.objects.filter(
-        course__subject=subject,
-        course__plan__group=group
-    ).order_by('date', 'lesson_number')
+            Grade.objects.update_or_create(
+                student=student,
+                subject=subject,
+                semester=semester,
+                defaults={
+                    'module_1': float(m1) if m1 else 0,
+                    'module_2': float(m2) if m2 else 0,
+                    'final_exam': float(final) if final else 0,
+                }
+            )
+        return redirect(request.path)
+
+    lessons = Lesson.objects.filter(course=sem_subject).order_by('date', 'lesson_number')
 
     absents = Attendance.objects.filter(lesson__in=lessons, is_present=False)
     absent_map = {f"{a.student_id}_{a.lesson_id}" for a in absents}

@@ -20,7 +20,9 @@ class Grade(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk and self.student and self.student.group:
-            self.course = self.student.group.course
+            plan = self.student.group.plans.first()
+            if plan:
+                self.course = plan.course_number
         super().save(*args, **kwargs)
 
     class Meta:
