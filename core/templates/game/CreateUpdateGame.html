@@ -22,9 +22,15 @@
                 <h1 class="builder-title">{% if game %}Правка{% else %}Создание{% endif %} <span>викторины</span></h1>
             </div>
 
-            <a href="{% url 'ai-generate-page' %}" class="btn-ai-magic">
-                <i class="bi bi-stars"></i> Сгенерировать через ИИ
-            </a>
+            {% if game %}
+                <button type="button" class="btn-delete-header" onclick="deleteGame('{{ game.id }}')">
+                    <i class="bi bi-trash3"></i> Удалить тест
+                </button>
+            {% else %}
+                <a href="{% url 'ai-generate-page' %}" class="btn-ai-magic">
+                    <i class="bi bi-stars"></i> Сгенерировать через ИИ
+                </a>
+            {% endif %}
         </header>
 
         <div id="game-builder">
@@ -49,6 +55,8 @@
             </div>
 
             <div class="builder-footer p-4 shadow-lg d-flex justify-content-between align-items-center">
+
+
                 <div class="text-muted small">
                     <i class="bi bi-info-circle me-1"></i> Все изменения сохраняются в вашу библиотеку
                 </div>

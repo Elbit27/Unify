@@ -4,7 +4,8 @@ let questions = [];
 let myTeam = null;
 let currentIdx = 0;
 let canClick = true;
-let playerStats = {}; // Глобальная переменная для хранения очков игроков
+let playerStats = {};
+let playersData = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Загрузка вопросов
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("📥 Сообщение:", data);
 
         if (data.type === 'ROOM_UPDATE') {
+        playersData = data.players;
         renderLobby(data.teams, data.players);
 
         const myName = window.userName;
@@ -186,8 +188,8 @@ function renderLobby(teams, players) {
 
     container.innerHTML = teams.map(team => {
         const teamPlayers = Object.entries(players)
-            .filter(([name, info]) => info.team_id === team.id)
-            .map(([name]) => name);
+            .filter(([username, info]) => info.team_id === team.id)
+            .map(([username, info]) => info.display_name);
 
         // Кнопка удаления только для персонала
         const deleteBtn = window.isStaff
@@ -219,14 +221,18 @@ function renderLobby(teams, players) {
 }
 
 
-// Функция отправки запроса на удаление
-function deleteTeamRemote(teamId) {
-    if (!confirm("Удалить эту команду? Все игроки из неё станут 'без команды'.")) return;
+// Функция отправки запроса на удаление команды
+function deleteTeamRemote(team_id) {
+    if (!confirm("Вы уверены, что хотите удалить эту команду? Все игроки из неё станут 'Без команды'.")) return;
 
-    gameSocket.send(JSON.stringify({
-        'action': 'delete_team',
-        'team_id': teamId
-    }));
+    if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
+        gameSocket.send(JSON.stringify({
+            'action': 'delete_team',
+            'team_id': team_id
+        }));
+    } else {
+        alert("Ошибка соединения с сервером.");
+    }
 }
 
 function handleAnswer(selectedBtn, answer) {
@@ -315,7 +321,7 @@ function renderQuestion() {
 function showResults(finalScores, teamNames) {
     const mainUI = document.getElementById('main-game-ui');
     const resultScreen = document.getElementById('result-screen');
-
+  
     if (mainUI) mainUI.style.display = 'none';
     if (resultScreen) {
         resultScreen.style.display = 'block';
@@ -466,15 +472,19 @@ function showResults(finalScores, teamNames) {
                 </div>
 
                 <div class="list-container">
-                    ${sortedPlayers.length > 0 ? sortedPlayers.map(([name, score], index) => `
+                    ${sortedPlayers.length > 0 ? sortedPlayers.map(([username, score], index) => {
+                        const displayName = (playersData && playersData[username]) 
+                        ? playersData[username].display_name 
+                        : username;
+                        return `
                         <div class="player-item-minimal">
                             <div style="display: flex; align-items: center;">
                                 <div class="rank-box-minimal ${index === 0 ? 'gold-minimal' : ''}">${index + 1}</div>
-                                <span style="font-weight: 500;">${name}</span>
+                                <span style="font-weight: 500;">${displayName}</span>
                             </div>
                             <span class="pts-minimal">${score} pts</span>
                         </div>
-                    `).join('') : '<p style="text-align: center; color: #9ca3af; padding: 30px 0;">Участники не ответили ни разу</p>'}
+                    `;}).join('') : '<p style="text-align: center; color: #9ca3af; padding: 30px 0;">Участники не ответили ни разу</p>'}
                 </div>
 
                 <button onclick="location.reload()" class="btn-unify-minimal">

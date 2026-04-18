@@ -45,6 +45,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             await database_sync_to_async(self.update_player_team)(team_id)
             await self.broadcast_room_update()
 
+        # Внутри метода receive после обработки других action:
+        elif action == 'delete_team':
+            # Проверяем, что удаляет учитель (или тот, кто имеет права)
+            if hasattr(self.user, 'role') and self.user.role == 'teacher':
+                team_id = data.get('team_id')
+                await database_sync_to_async(self.perform_delete_team)(team_id)
+                await self.broadcast_room_update()
+
         # --- ЛОГИКА ИГРЫ С ИСПОЛЬЗОВАНИЕМ КЭША ---
         elif action == 'start_game':
             if hasattr(self.user, 'role') and self.user.role == 'teacher':
@@ -70,6 +78,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             lobby_data = await database_sync_to_async(self.get_lobby_data)()
             user_info = lobby_data['players'].get(self.user.username, {})
             team_id = str(user_info.get('team_id')) if user_info.get('team_id') else None
+            all_teams = [str(t['id']) for t in lobby_data['teams']]
+            total_teams_count = len(all_teams)
+            max_blocked = max(1, total_teams_count - 1)
 
             if not team_id or team_id in state['blocked_teams']:
                 return
@@ -112,16 +123,21 @@ class GameConsumer(AsyncWebsocketConsumer):
                 if team_id not in state['blocked_teams']:
                     state['blocked_teams'].append(team_id)
 
-                all_active_ids = [str(t['id']) for t in lobby_data['teams']]
-                if len(state['blocked_teams']) >= len(all_active_ids):
+                    # Если очередь переполнилась — выбиваем самую старую команду
+                while len(state['blocked_teams']) > max_blocked:
+                    state['blocked_teams'].pop(0)
+
+                    # Защита от "мёртвой петли" (если все команды в бане)
+                if len(state['blocked_teams']) >= total_teams_count:
                     state['blocked_teams'] = []
 
-                cache.set(self.cache_key, state, 7200)  # Обновляем кэш
+                cache.set(self.cache_key, state, 7200)
 
                 await self.channel_layer.group_send(self.room_group_name, {
                     'type': 'team_blocked_broadcast',
                     'team': team_id,
-                    'wrong_answer': data.get('answer_text')
+                    'wrong_answer': data.get('answer_text'),
+                    'blocked_list': state['blocked_teams']
                 })
 
     # --- ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ---
@@ -134,6 +150,15 @@ class GameConsumer(AsyncWebsocketConsumer):
                 user=self.user, game_id=self.game_id,
                 defaults={'team': team}
             )
+        except Team.DoesNotExist:
+            pass
+
+    def perform_delete_team(self, team_id):
+        from .models import Team, Player
+        try:
+            team = Team.objects.get(id=team_id, game_id=self.game_id)
+            Player.objects.filter(team=team).update(team=None)
+            team.delete()
         except Team.DoesNotExist:
             pass
 
@@ -152,13 +177,24 @@ class GameConsumer(AsyncWebsocketConsumer):
         from .models import Player, Team
         teams = Team.objects.filter(game_id=self.game_id)
         teams_list = [{'id': t.id, 'name': t.name} for t in teams]
+
         players = Player.objects.filter(game_id=self.game_id).select_related('team', 'user')
-        players_dict = {
-            p.user.username: {
+
+        players_dict = {}
+        for p in players:
+            display_name = p.user.username
+            if p.user.first_name:
+                if p.user.last_name:
+                    display_name = f"{p.user.first_name} {p.user.last_name[0]}."
+                else:
+                    display_name = p.user.first_name
+
+            players_dict[p.user.username] = {
+                'display_name': display_name,
                 'team_name': p.team.name if p.team else "Без команды",
                 'team_id': p.team.id if p.team else None
-            } for p in players
-        }
+            }
+
         return {'teams': teams_list, 'players': players_dict}
 
     async def room_update_message(self, event):
@@ -175,7 +211,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'TEAM_BLOCKED',
             'team': event['team'],
-            'wrong_answer': event.get('wrong_answer')
+            'wrong_answer': event.get('wrong_answer'),
+            'blocked_list': event.get('blocked_list', [])
         }))
 
     async def next_question_broadcast(self, event):

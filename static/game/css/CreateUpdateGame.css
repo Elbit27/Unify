@@ -146,3 +146,30 @@
     border-color: var(--success-green) !important;
     background-color: #f0fff4;
 }
+
+.btn-delete-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(220, 53, 69, 0.1);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 50px; /* Скругленная как у кнопки ИИ */
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.btn-delete-header:hover {
+    background: #dc3545;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+    border-color: #dc3545;
+}
+
+.btn-delete-header i {
+    font-size: 1.1rem;
+}
