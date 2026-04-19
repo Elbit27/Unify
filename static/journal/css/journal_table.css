@@ -78,4 +78,26 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .form-control-sm:focus { box-shadow: none; background-color: #fffde7; }
 
+.table-hover tbody tr:hover {
+    background-color: rgba(52, 152, 219, 0.08) !important; /* Нежно-голубой при наведении */
+    transition: background 0.2s;
+}
 
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Фиксируем первую колонку (№) и вторую (ФИО) */
+#attendance-table th:nth-child(1),
+#attendance-table td:nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: white;
+}
+
+
+/* Чтобы при наведении фон не пропадал у липких ячеек */
+.table-hover tbody tr:hover td {
+    background-color: inherit;
+}

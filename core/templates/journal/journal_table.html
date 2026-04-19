@@ -24,19 +24,40 @@
     </div>
 
     <div class="card border-0 shadow-sm overflow-hidden">
+
         <form method="post" id="journalForm">
             {% csrf_token %}
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 border", id="attendance-table", data-url="{% url 'update-attendance' %}">
-                    <thead class="table-light">
+                    <thead class="table-light text-center">
                         <tr>
-                            <th class="ps-4" style="min-width: 250px;">ФИО Студента</th>
+                            <th class="bg-white border-0"></th>
+                            <th class="bg-white border-0"></th> {% regroup lessons by date|date:"F" as month_list %}
+
+                            {% for month in month_list %}
+                                <th colspan="{{ month.list|length }}" class="border-start bg-light text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                    {{ month.grouper }}
+                                </th>
+                            {% endfor %}
+
+                            <th colspan="5" class="bg-white border-0"></th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" style="width: 40px;">№</th>
+                            <th class="ps-4 text-start" style="min-width: 250px;">ФИО Студента</th>
                             {% for lesson in lessons %}
                             <th class="text-center border-start" style="min-width: 60px; font-size: 0.75rem;">
                                 {{ lesson.date|date:"d.m" }}<br>
-                                <span class="text-muted small">п.{{ lesson.lesson_number }}</span>
+                                <span class="text-muted small">
+                                    {% if lesson.lesson_type == "lecture" %}Лк.
+                                    {% elif lesson.lesson_type == "practice" %}Пр.
+                                    {% elif lesson.lesson_type == "lab" %}Лб.
+                                    {% else %}{{ lesson.lesson_type|slice:":2"|upper }}
+                                    {% endif %}
+                                </span>
                             </th>
                             {% endfor %}
+                            <th class="text-cneter border-start">Всего нб</th>
                             <th class="text-center border-start" style="width: 100px;">Мод. 1</th>
                             <th class="text-center" style="width: 100px;">Мод. 2</th>
                             <th class="text-center" style="width: 100px;">Экзамен</th>
@@ -46,9 +67,9 @@
                     <tbody>
                         {% for student in students %}
                         <tr>
+                            <td class="text-center ">{{ forloop.counter }}</td>
                             <td class="ps-4">
                                 <span class="fw-medium">{{ student.last_name }} {{ student.first_name }}</span>
-                                <div class="small text-muted" style="font-size: 0.7rem;">{{ student.username }}</div>
                             </td>
 
                             {% for lesson in lessons %}
@@ -65,7 +86,7 @@
                                 </div>
                             </td>
                             {% endfor %}
-
+                            <td class="text-center border-start"> {{ student.total_absences }}</td>
                             <td class="border-start">
                                 <input type="number" step="0.1" name="m1_{{ student.id }}"
                                        value="{{ student.current_grade.module_1|floatformat:1|default:0 }}"
@@ -93,7 +114,7 @@
             </div>
 
             <div class="p-3 bg-light border-top text-end">
-                <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm">Сохранить оценки</button>
+                <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm">Сохранить изменения</button>
             </div>
         </form>
     </div>

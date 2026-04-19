@@ -63,7 +63,15 @@ def teacher_journal_view(request, subject_id, group_id):
     sem_subject = get_object_or_404(SemesterSubject, subject=subject, plan__group=group, teacher=request.user)
 
     semester = sem_subject.plan.semester
-    students = User.objects.filter(group=group, role='student').order_by('last_name')
+    students = User.objects.filter(group=group_id, role='student').annotate(
+        total_absences=Count(
+            'attendances',
+            filter=Q(
+                attendances__is_present=False,
+                attendances__lesson__course__subject_id=subject_id
+            )
+        )
+    ).order_by('last_name')
 
     if request.method == 'POST':
         for student in students:
