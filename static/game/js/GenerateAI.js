@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('aiForm');
 
@@ -25,23 +27,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
 
+                const data = await response.json();
+
                 if (response.ok) {
-                    window.location.href = "/";
+                    checkTaskStatus(data.task_id);
+
+                    const loaderText = document.querySelector('#loader p');
+                    if (loaderText) loaderText.innerText = "Нейросеть генерирует вопросы...";
+
                 } else {
-                    const data = await response.json();
-                    alert('Ошибка ИИ: ' + JSON.stringify(data.error));
-                    form.style.display = 'flex';
-                    loader.style.display = 'none';
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                    form.style.display = 'none';
+                    loader.style.display = 'flex';
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
-                alert('Ошибка сервера. Проверьте консоль.');
-                form.style.display = 'flex';
-                loader.style.display = 'none';
+                alert('Ошибка сервера. Попробуйте позже.');
+                form.style.display = 'none';
+                loader.style.display = 'flex';
             }
         });
     }
 });
+
+function checkTaskStatus(taskId) {
+    fetch(`/api/task-status/${taskId}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'SUCCESS') {
+                window.location.href = `/games/${data.result.game_id}/`; // Перекидываем в игру
+            } else if (data.status === 'FAILURE') {
+                alert("Ошибка генерации");
+            } else {
+                // Если еще PROGRESS, проверяем снова через 3 сек
+                setTimeout(() => checkTaskStatus(taskId), 3000);
+            }
+        });
+}
 
 // Функция получения куки
 function getCookie(name) {

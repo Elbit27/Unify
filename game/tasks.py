@@ -14,10 +14,13 @@ User = get_user_model()
 )
 def generate_game_async(self, topic, count, user_id):
     print(f"--- [START] Фоновая генерация для пользователя {user_id} ---")
+    self.update_state(state='PROGRESS', meta={'message': 'Нейросеть генерирует вопросы...'})
     try:
         # 1. Запрос к Gemini
         data = generate_game_data(topic, count)
         user = User.objects.get(id=user_id)
+
+        self.update_state(state='PROGRESS', meta={'message': 'Сохраняем игру в базу данных...'})
 
         # 2. Создаем игру (пока is_active=False)
         game = Game.objects.create(
@@ -52,7 +55,8 @@ def generate_game_async(self, topic, count, user_id):
         print(f"--- [SUCCESS] Игра готова! PIN-код: {game.pin_code} ---")
         Notification.objects.create(
             user=user,
-            message=f"Ваша игра '{game.title}' готова! PIN: {game.pin_code}"
+            message=f"Ваша игра '{game.title}' готова! PIN: {game.pin_code}",
+            link = f"/game/play_game/{game.id}/"
         )
         return f"Успех: {game.title} (PIN: {game.pin_code})"
 

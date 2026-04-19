@@ -82,29 +82,41 @@
     transform: translateY(0);
 }
 
-/* Стили лоадера */
+/* Контейнер для лоадера */
 #loader {
-    display: none; /* Скрыт по умолчанию, показывается через JS */
+    display: none; /* Скрыт по умолчанию, JS переключит на flex */
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Центрирует по горизонтали */
+    justify-content: center; /* Центрирует по вертикали (если есть место) */
+    text-align: center;
+    padding: 40px 0;
+    width: 100%;
 }
 
+/* Сам спиннер */
 .spinner-inner {
     width: 60px;
     height: 60px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--primary-ai);
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-top: 5px solid #3498db; /* Синий акцент */
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
+    margin-left: auto; /* Дополнительная гарантия центра */
+    margin-right: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .loading-text {
-    color: var(--primary-ai);
-    font-weight: 500;
-    font-style: italic;
-    animation: pulse 1.5s infinite;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 15px;
 }
+
 
 /* Анимации */
 @keyframes spin {

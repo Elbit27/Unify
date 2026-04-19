@@ -6,6 +6,7 @@ class Notification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    link = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']

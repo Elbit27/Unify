@@ -37,13 +37,83 @@ body {
 
 .brand-accent { color: var(--sky-blue); }
 
-.nav-link {
-    color: rgba(255, 255, 255, 0.8) !important;
-    font-weight: 500;
-    transition: 0.3s;
+.nav-link.position-relative {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.nav-link:hover { color: var(--sky-blue) !important; }
+.badge-custom {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    font-size: 0.65rem;
+    padding: 3px 5px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--graphite);
+    z-index: 1;
+}
+
+.notification-bell-icon {
+    font-size: 1.3rem;
+    display: inline-block;
+    line-height: 1;
+}
+
+/* Контейнер списка */
+#notification-items {
+    padding: 5px 0;
+}
+
+/* Элемент уведомления */
+.notification-item {
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
+    padding: 12px 15px;
+}
+
+.notification-link:hover {
+    background-color: var(--soft-gray);
+}
+
+.notification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #95a5a6;
+    font-weight: 600;
+}
+
+.notification-message {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--graphite);
+}
+
+.text-muted.text-center {
+    padding: 20px;
+    font-style: italic;
+}
 
 /* Mobile Menu (Offcanvas) */
 .mobile-link {
@@ -208,3 +278,5 @@ body {
         margin-right: 0 !important;
     }
 }
+
+

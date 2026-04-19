@@ -34,13 +34,27 @@ async function checkNotifications() {
                     setTimeout(() => { alert("🔔 " + note.message); }, 500);
                 }
 
-                // 2. Добавляем в выпадающий список
                 const item = document.createElement('div');
                 item.className = 'notification-item';
-                item.innerHTML = `
-                    <span class="time">${new Date(note.created_at).toLocaleTimeString()}</span>
-                    <div class="message">${note.message}</div>
+
+                // Проверяем, есть ли ссылка. Если есть — оборачиваем в неё, если нет — просто текст.
+                const content = `
+                    <div class="notification-body">
+                        <span class="notification-time">${new Date(note.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <div class="notification-message">${note.message}</div>
+                    </div>
                 `;
+
+                if (note.link) {
+                    const linkWrapper = document.createElement('a');
+                    linkWrapper.href = note.link;
+                    linkWrapper.className = 'notification-link';
+                    linkWrapper.innerHTML = content;
+                    item.appendChild(linkWrapper);
+                } else {
+                    item.innerHTML = content;
+                }
+
                 list.appendChild(item);
             });
         } else {
