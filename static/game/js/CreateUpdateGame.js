@@ -168,6 +168,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+window.deleteGame = async function(gameId) {
+    if (!confirm("Вы уверены, что хотите удалить этот тест? Это действие необратимо.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/game/${gameId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            alert("Тест успешно удален");
+            window.location.href = '/profile/';
+        } else {
+            const data = await response.json();
+            alert("Ошибка при удалении: " + (data.error || "Неизвестная ошибка"));
+        }
+    } catch (e) {
+        console.error("Ошибка запроса:", e);
+        alert("Не удалось связаться с сервером.");
+    }
+};
+
 // Утилита для получения CSRF токена
 function getCookie(name) {
     let cookieValue = null;

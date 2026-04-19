@@ -102,3 +102,109 @@ body {
 @media (max-width: 768px) {
     #notification-items { width: 260px !important; }
 }
+
+
+/* Шапка всегда сверху */
+.navbar-custom {
+    background-color: var(--graphite) !important;
+    z-index: 1060 !important; /* Выше чем выпадающее меню */
+    position: sticky;
+    top: 0;
+}
+
+/* Веб-панель (Side Panel) */
+.dropdown-menu.user-side-panel {
+    position: fixed !important;
+    top: 60px !important; /* Высота твоей шапки */
+    right: -320px !important; /* Спрятано за экраном */
+    width: 320px !important;
+    height: calc(100vh - 60px) !important;
+    background-color: var(--graphite) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 20px !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: -5px 10px 20px rgba(0,0,0,0.2) !important;
+    transition: right 0.3s ease-in-out !important;
+    z-index: 1050; /* Чуть ниже шапки */
+}
+
+/* Класс для анимации (добавляется через JS) */
+.dropdown-menu.user-side-panel.show {
+    right: 0 !important;
+}
+
+/* Стили кнопок-карточек (как на фото) */
+.side-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 15px;
+    text-decoration: none;
+    font-weight: 800;
+    text-transform: lowercase;
+    transition: 0.2s;
+}
+
+.card-profile {
+    background-color: var(--white);
+    color: var(--graphite) !important;
+    margin-bottom: 10px;
+}
+
+.card-action {
+    background-color: var(--sky-blue);
+    color: var(--white) !important;
+}
+
+.card-action i {
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+
+.card-logout {
+    background-color: #e74c3c;
+    color: white !important;
+    margin-top: auto; /* Прижать к низу */
+}
+
+/* Убираем стрелочку у ника */
+.dropdown-toggle::after { display: none !important; }
+
+/* --- Адаптивность для мобильных устройств --- */
+@media (max-width: 768px) {
+    /* Чтобы текст в шапке не наезжал на иконки */
+    .navbar-brand {
+        font-size: 1rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+
+    /* Боковая панель на весь экран для удобства */
+    .user-side-panel {
+        width: 100% !important;
+        right: -100% !important;
+        top: 60px !important; /* Уменьшаем отступ под мобильную шапку */
+        height: calc(100vh - 60px) !important;
+    }
+
+    /* Увеличиваем кнопки, чтобы по ним было легко попадать пальцем */
+    .side-card {
+        padding: 18px 20px;
+        font-size: 1.1rem;
+    }
+
+    /* Скрываем имя пользователя на мобилках, оставляем только аватарку */
+    #userDropdown span {
+        display: none;
+    }
+
+    .avatar-circle {
+        margin-right: 0 !important;
+    }
+}

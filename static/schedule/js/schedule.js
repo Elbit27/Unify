@@ -1,8 +1,17 @@
-// core/static/core/js/timetable.js
+document.getElementById('daySelect').addEventListener('change', function() {
+    const selectedDay = this.value;
+    // Скрываем все дни
+    document.querySelectorAll('.day-wrapper').forEach(wrapper => {
+        wrapper.style.display = 'none';
+    });
+    // Показываем нужный
+    document.getElementById('day-' + selectedDay).style.display = 'block';
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const now = new Date();
     let dayOfWeek = now.getDay(); // 0 (Вс) - 6 (Сб)
-    if (dayOfWeek === 0) dayOfWeek = 7; // Наше расписание до Сб, но пусть будет 7
+    if (dayOfWeek === 0) dayOfWeek = 7;
 
     const currentTime = now.getHours().toString().padStart(2, '0') + ":" +
                         now.getMinutes().toString().padStart(2, '0');
@@ -31,3 +40,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+

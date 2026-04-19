@@ -1,25 +1,132 @@
-/* Прячем сам квадрат чекбокса */
-.btn-check { display: none; }
+.schedule-page {
+    background-color: #fcfcfc;
+    min-height: 100vh;
+}
 
-.attendance-wrapper { height: 35px; display: flex; }
+/* Стили заголовка и селектора */
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
 
-.attendance-label {
-    flex: 1;
+.selector-container {
+    position: relative;
+    width: 220px;
+}
+
+.day-selector {
+    appearance: none;
+    width: 100%;
+    padding: 10px 15px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.selector-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #8da9c4;
+}
+
+.lessons-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lesson-card {
+    display: flex;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #edf2f7;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.time-sidebar {
+    background-color: #8da9c4;
+    color: white;
+    width: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: transparent; /* Текст скрыт по умолчанию */
-    transition: 0.2s;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
-/* Эффект при наведении */
-.attendance-label:hover { background: #f8f9fa; color: #dee2e6; }
+.lesson-body {
+    flex: 1;
+    padding: 25px;
+}
 
-/* КОГДА В БАЗЕ ЕСТЬ НБ (чекбокс отмечен) */
-.btn-check:checked + .attendance-label {
-    background-color: #ffebee; /* Нежно-красный фон */
-    color: #d32f2f;            /* Яркий красный текст НБ */
+.lesson-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.subject-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #2d3748;
+    margin: 0;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.status-indicator.online { background-color: #48bb78; }
+
+.lesson-mid {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.type-tag {
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.location-text {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.lesson-bottom {
+    font-size: 0.9rem;
+    color: #a0aec0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .lesson-card {
+        flex-direction: column;
+    }
+
+    .time-sidebar {
+        width: 100%;
+        padding: 10px 20px;
+        justify-content: flex-start;
+    }
 }
