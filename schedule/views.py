@@ -16,7 +16,7 @@ def schedule_view(request):
     user = request.user
     now = timezone.now().date()
 
-    end_date = now + timedelta(days=7)
+    end_date = now + timedelta(days=6)
 
     if user.role == 'student':
         if not user.group:

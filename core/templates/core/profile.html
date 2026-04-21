@@ -5,14 +5,13 @@
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
-
 {% endblock %}
 
 {% block content %}
 <div class="profile-wrapper py-5">
     <div class="row g-4">
         <div class="col-lg-4">
-            <div class="profile-side-card text-center p-4 shadow-sm bg-white rounded">
+            <div class="profile-side-card text-center">
                 <div class="avatar-wrapper mb-4">
                     <div class="profile-main-avatar mx-auto">
                         {{ user.username|slice:":1"|upper }}
@@ -23,11 +22,11 @@
 
                 <div class="mb-3">
                     {% if user.role == 'teacher' %}
-                        <span class="badge badge-role bg-success-subtle text-success border border-success-subtle">
+                        <span class="badge-role role-teacher">
                             <i class="bi bi-person-badge me-1"></i>Преподаватель
                         </span>
                     {% else %}
-                        <span class="badge badge-role bg-primary-subtle text-primary border border-primary-subtle">
+                        <span class="badge-role role-student">
                             <i class="bi bi-mortarboard me-1"></i>Студент
                         </span>
                     {% endif %}
@@ -37,11 +36,11 @@
                     {{ user.email|default:"academy.student@lumos.edu" }}
                 </p>
 
-                <div class="user-academic-info p-3 mb-4 rounded text-start">
+                <div class="user-academic-info text-start mb-4">
                     <div class="mb-3">
                         <span class="academic-label d-block">Факультет</span>
                         <span class="academic-value">
-                            <i class="bi bi-bank me-2 text-primary"></i>{{ user.faculty.name|default:"Не указан" }}
+                            <i class="bi bi-bank me-2"></i>{{ user.faculty.name|default:"Не указан" }}
                         </span>
                     </div>
 
@@ -49,49 +48,50 @@
                     <div class="mb-0">
                         <span class="academic-label d-block">Группа</span>
                         <span class="academic-value">
-                            <i class="bi bi-people me-2 text-primary"></i>{{ user.group.name|default:"Не назначена" }}
+                            <i class="bi bi-people me-2"></i>{{ user.group.name|default:"Без группы" }}
                         </span>
                     </div>
                     {% elif user.role == 'teacher' %}
                     <div class="mb-0">
                         <span class="academic-label d-block">Кафедра</span>
                         <span class="academic-value">
-                            <i class="bi bi-building me-2 text-success"></i>{{ user.department.name|default:"Не указана" }}
+                            <i class="bi bi-building me-2"></i>{{ user.department.name|default:"Не указана" }}
                         </span>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="stats-container row g-0 border-top pt-3">
-                    <div class="col-6 stat-item border-end">
-                        <div class="stat-value text-primary">{{ games.count }}</div>
-                        <div class="stat-label">Сессий</div>
+                <div class="stats-container row g-0 pt-3">
+                    <div class="col-6 stat-item">
+                        <div class="stat-value">{{ games.count }}</div>
+                        <div class="stat-label">Игры</div>
                     </div>
                     <div class="col-6 stat-item">
                         {% if user.role == 'student' and user.group %}
-                            <div class="stat-value text-primary">{{ user.group.current_course }}</div>
+                            <div class="stat-value">{{ user.group.current_course }}</div>
                             <div class="stat-label">Курс</div>
                         {% else %}
-                            <div class="stat-value text-primary">{{ user.date_joined|date:"Y" }}</div>
+                            <div class="stat-value">{{ user.date_joined|date:"Y" }}</div>
                             <div class="stat-label">С нами</div>
                         {% endif %}
                     </div>
                 </div>
 
-                <div class="profile-actions mt-4 border-top pt-3">
+                <div class="profile-actions mt-4 pt-3">
                     <a href="{% url 'account_logout' %}" class="btn-logout-minimal text-danger text-decoration-none small">
-                        <i class="bi bi-box-arrow-right me-2"></i>Выйти из профиля
+                        <i class="bi bi-box-arrow-right me-2"></i>Выйти из системы
                     </a>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-8">
             {% if user.role == 'student' %}
                 <div class="content-header d-flex justify-content-between align-items-center mb-4">
                     <h3 class="section-title h4 mb-0">Моя успеваемость</h3>
-                    <div class="btn-group shadow-sm rounded-pill p-1 bg-white border">
-                        <button class="btn btn-sm btn-primary rounded-pill px-3 active" id="sem1-tab" data-bs-toggle="tab" data-bs-target="#sem1">1 Сем</button>
-                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 border-0" id="sem2-tab" data-bs-toggle="tab" data-bs-target="#sem2">2 Сем</button>
+                    <div class="tabs-navigation-wrapper">
+                        <button class="btn-tab active" id="sem1-tab" data-bs-toggle="tab" data-bs-target="#sem1">1 сем</button>
+                        <button class="btn-tab" id="sem2-tab" data-bs-toggle="tab" data-bs-target="#sem2">2 сем</button>
                     </div>
                 </div>
 
@@ -99,43 +99,28 @@
                     <div class="tab-pane fade show active" id="sem1">
                         <div class="row g-3">
                             {% for grade in grades_sem1 %}
-                            <div class="col-md-6">
-                                <div class="grade-card p-3 shadow-sm bg-white rounded border-start border-4 border-primary">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="fw-bold mb-0 text-truncate" title="{{ grade.subject.name }}">{{ grade.subject.name }}</h6>
-                                        <span class="badge bg-primary rounded-pill">{{ grade.total_score|floatformat:0 }} / 100</span>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="score-card">
+                                    <div class="score-card-header">
+                                        <span class="score-subject" title="{{ grade.subject.name }}">{{ grade.subject.name }}</span>
+                                        <span class="score-total">{{ grade.total_score|floatformat:0 }}</span>
                                     </div>
-
-                                    <div class="module-progress-bars mt-3">
-                                        <div class="mb-2">
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
-                                                <span>Модуль 1 (40%)</span>
-                                                <span>{{ grade.module_1 }}</span>
-                                            </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_1 }}%"></div></div>
+                                    <div class="score-details">
+                                        <div class="score-item">
+                                            <span class="score-label">М1</span>
+                                            <span class="score-num">{{ grade.module_1 }}</span>
                                         </div>
-                                        <div class="mb-2">
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
-                                                <span>Модуль 2 (40%)</span>
-                                                <span>{{ grade.module_2 }}</span>
-                                            </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_2 }}%"></div></div>
+                                        <div class="score-item">
+                                            <span class="score-label">М2</span>
+                                            <span class="score-num">{{ grade.module_2 }}</span>
                                         </div>
-                                        <div>
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
-                                                <span>Экзамен (20%)</span>
-                                                <span>{{ grade.final_exam }}</span>
-                                            </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: {{ grade.final_exam }}%"></div></div>
+                                        <div class="score-item">
+                                            <span class="score-label">Экз</span>
+                                            <span class="score-num">{{ grade.final_exam }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% empty %}
-                                <div class="text-center py-5 bg-white rounded shadow-sm border w-100">
-                                    <i class="bi bi-journal-x display-4 text-muted mb-2 d-block"></i>
-                                    <p class="text-muted">Оценок за 1 семестр пока нет</p>
-                                </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -144,40 +129,40 @@
                         <div class="row g-3">
                             {% for grade in grades_sem2 %}
                             <div class="col-md-6">
-                                <div class="grade-card p-3 shadow-sm bg-white rounded border-start border-4 border-success">
+                                <div class="grade-card-detailed">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="fw-bold mb-0 text-truncate">{{ grade.subject.name }}</h6>
-                                        <span class="badge bg-success rounded-pill">{{ grade.total_score|floatformat:0 }} / 100</span>
+                                        <h6 class="subject-title mb-0">{{ grade.subject.name }}</h6>
+                                        <span class="subject-badge">{{ grade.total_score|floatformat:0 }} / 100</span>
                                     </div>
 
-                                    <div class="module-progress-bars mt-3">
-                                        <div class="mb-2">
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <div class="module-progress-wrapper mt-3">
+                                        <div class="progress-item mb-2">
+                                            <div class="d-flex justify-content-between small text-muted">
                                                 <span>Модуль 1 (40%)</span>
                                                 <span>{{ grade.module_1 }}</span>
                                             </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_1 }}%"></div></div>
+                                            <div class="custom-progress"><div class="bar" style="width: {{ grade.module_1 }}%"></div></div>
                                         </div>
-                                        <div class="mb-2">
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <div class="progress-item mb-2">
+                                            <div class="d-flex justify-content-between small text-muted">
                                                 <span>Модуль 2 (40%)</span>
                                                 <span>{{ grade.module_2 }}</span>
                                             </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: {{ grade.module_2 }}%"></div></div>
+                                            <div class="custom-progress"><div class="bar" style="width: {{ grade.module_2 }}%"></div></div>
                                         </div>
-                                        <div>
-                                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <div class="progress-item">
+                                            <div class="d-flex justify-content-between small text-muted">
                                                 <span>Экзамен (20%)</span>
                                                 <span>{{ grade.final_exam }}</span>
                                             </div>
-                                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: {{ grade.final_exam }}%"></div></div>
+                                            <div class="custom-progress"><div class="bar bar-exam" style="width: {{ grade.final_exam }}%"></div></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             {% empty %}
-                                <div class="text-center py-5 bg-white rounded shadow-sm border w-100">
-                                    <p class="text-muted">Данные за 2 семестр появятся позже</p>
+                                <div class="empty-state text-center py-5 w-100">
+                                    <p class="text-muted">Данные за 2 семестр временно отсутствуют</p>
                                 </div>
                             {% endfor %}
                         </div>
@@ -186,36 +171,36 @@
 
             {% elif user.role == 'teacher' %}
                 <div class="content-header d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="section-title h4 mb-0">Управление сессиями</h3>
-                    <a href="{% url 'game-create' %}" class="btn-create-new btn btn-primary btn-sm rounded-pill px-3">
-                        <i class="bi bi-plus-lg me-2"></i>Создать новую
+                    <h3 class="section-title h4 mb-0">Управление баталиями</h3>
+                    <a href="{% url 'game-create' %}" class="btn-action-primary">
+                        <i class="bi bi-plus-lg me-2"></i>Создать игру
                     </a>
                 </div>
 
                 <div class="sessions-grid">
                     {% if games %}
                         {% for game in games %}
-                        <div class="session-card mb-3 p-3 bg-white shadow-sm rounded border-start border-4 border-success">
+                        <div class="session-card mb-3 p-3">
                             <div class="row align-items-center g-3">
                                 <div class="col-md-6">
-                                    <h5 class="session-title mb-1 h6 fw-bold text-dark">{{ game.title }}</h5>
+                                    <h5 class="session-title mb-1">{{ game.title }}</h5>
                                     <div class="session-meta small text-muted">
-                                        <span class="me-3"><i class="bi bi-key-fill text-primary me-1"></i>{{ game.pin_code }}</span>
+                                        <span class="me-3"><i class="bi bi-key-fill me-1"></i>{{ game.pin_code }}</span>
                                         <span><i class="bi bi-question-circle me-1"></i>{{ game.questions.count }} вопр.</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6 text-md-end">
-                                    <a href="{% url 'game-update' game.id %}" class="btn btn-light btn-sm rounded-circle me-2 border"><i class="bi bi-pencil-square"></i></a>
-                                    <a href="{% url 'play_game' game.id %}" class="btn btn-primary btn-sm px-4 rounded-pill">Запустить</a>
+                                    <a href="{% url 'game-update' game.id %}" class="btn-icon-edit me-2"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="{% url 'play_game' game.id %}" class="btn-action-start">Запустить</a>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
                     {% else %}
-                        <div class="empty-sessions text-center py-5 bg-white rounded shadow-sm border">
-                            <i class="bi bi-controller display-4 text-muted mb-3 d-block"></i>
+                        <div class="empty-state text-center py-5">
+                            <i class="bi bi-controller d-block mb-3"></i>
                             <p class="text-muted">Вы еще не создали ни одной викторины</p>
-                            <a href="{% url 'game-create' %}" class="btn btn-primary btn-sm px-4 rounded-pill mt-2">Создать сейчас</a>
+                            <a href="{% url 'game-create' %}" class="btn-link">Создать первую</a>
                         </div>
                     {% endif %}
                 </div>
@@ -225,5 +210,4 @@
 </div>
 
 <script src="{% static 'core/js/profile.js' %}"></script>
-
 {% endblock %}

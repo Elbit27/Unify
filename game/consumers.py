@@ -93,7 +93,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 state['player_scores'][self.user.username] = state['player_scores'].get(self.user.username, 0) + 1
                 state['blocked_teams'] = []
 
-                winner_name = self.user.first_name if self.user.first_name else self.user.username
+                winner_name = self.user.username if self.user.first_name == '' else  self.user.first_name
 
                 if state['current_idx'] >= total_q - 1:
                     state['game_active'] = False

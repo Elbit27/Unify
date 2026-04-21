@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.disabled = true; // Запрещаем кликать во время паузы
             });
 
-            // 2. Пишем имя победителя
             if (statusMsg && winner) {
                 statusMsg.innerText = `✅ ${winner} ответил(а) верно!`;
                 statusMsg.style.color = "#28a745";

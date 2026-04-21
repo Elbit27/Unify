@@ -16,6 +16,11 @@
     width: 220px;
 }
 
+.selector-container {
+    position: relative;
+    width: 160px;
+}
+
 .day-selector {
     appearance: none;
     width: 100%;
@@ -29,7 +34,7 @@
 
 .selector-icon {
     position: absolute;
-    right: 12px;
+    right: 5px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
@@ -65,14 +70,14 @@
 
 .lesson-body {
     flex: 1;
-    padding: 25px;
+    padding: 12px;
 }
 
 .lesson-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 .subject-name {
@@ -102,7 +107,7 @@
     padding: 2px 8px;
     border-radius: 6px;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 650;
 }
 
 .location-text {

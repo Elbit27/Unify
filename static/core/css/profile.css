@@ -5,192 +5,245 @@
     --soft-gray: #f8f9fa;
     --text-muted: #7f8c8d;
     --border-color: #eef2f7;
+    --accent-success: #27ae60;
+    --radius: 12px;
+    --transition: all 0.3s ease;
 }
 
-.profile-wrapper {
-    font-family: 'Inter', sans-serif;
+body {
+    background-color: var(--soft-gray);
+    color: var(--graphite);
+    font-family: 'Inter', sans-serif; /* Если подключен */
 }
 
-/* ЛЕВАЯ КАРТОЧКА */
-.profile-side-card {
+/* --- Основные карточки --- */
+.profile-side-card,
+.score-card,
+.grade-card-detailed,
+.session-card {
     background: var(--white);
+    border-radius: var(--radius);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 40px 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 10px rgba(44, 62, 80, 0.05);
 }
 
+.profile-side-card {
+    padding: 2.5rem 1.5rem;
+}
+
+/* --- Аватар и Роли --- */
 .profile-main-avatar {
     width: 90px;
     height: 90px;
     background: var(--sky-blue);
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 800;
+    color: var(--white);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 30px;
-    margin: 0 auto;
-    box-shadow: 0 10px 20px rgba(52, 152, 219, 0.2);
+    font-size: 2.2rem;
+    font-weight: 600;
+    border: 4px solid var(--border-color);
 }
 
-.user-name {
-    font-weight: 800;
+.badge-role {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* 1. Добавляем стили для заголовка, чтобы он не выталкивал бейдж */
+.subject-title {
     color: var(--graphite);
-    margin-bottom: 5px;
+    font-weight: 700;
+    white-space: nowrap;      /* Запрещаем перенос заголовка */
+    overflow: hidden;         /* Прячем то, что не влезло */
+    text-overflow: ellipsis;  /* Добавляем троеточие (...) */
+    margin-right: 10px;       /* Зазор между текстом и цифрами */
+    flex: 1;                  /* Позволяет заголовку занимать всё свободное место */
 }
 
-.user-email {
-    color: var(--text-muted);
+/* 2. Исправляем сам бейдж */
+.subject-badge {
+    white-space: nowrap;
+    padding: 5px 12px;
+    background: var(--soft-gray);
+    color: var(--sky-blue);
+    border-radius: 8px;
+    font-weight: 800;
     font-size: 0.9rem;
-    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
 }
+
+
+.role-teacher { background: #e8f5e9; color: var(--accent-success); }
+.role-student { background: #e3f2fd; color: var(--sky-blue); }
+
+/* --- Текст и Академ. инфо --- */
+.user-name { color: var(--graphite); font-weight: 700; }
+.academic-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 600; }
+.academic-value i { color: var(--sky-blue); }
 
 .stats-container {
-    background: var(--soft-gray);
-    border-radius: 15px;
-    padding: 20px 0;
+    border-top: 2px solid var(--soft-gray);
+    margin-top: 20px;
 }
+.stat-value { color: var(--graphite); font-weight: 700; font-size: 1.3rem; }
 
-.stat-value {
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: var(--graphite);
+/* --- Навигация (Табы) --- */
+.tabs-navigation-wrapper {
+    background: var(--white);
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
-
-.stat-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.btn-tab {
+    border: none;
+    padding: 8px 24px;
+    background: transparent;
     color: var(--text-muted);
+    font-weight: 600;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+.btn-tab.active {
+    background: var(--sky-blue);
+    color: var(--white);
 }
 
-.btn-logout-minimal {
-    display: inline-block;
-    color: #e74c3c;
+/* --- Успеваемость (Карточки) --- */
+.score-card {
+    padding: 1.2rem;
+    transition: var(--transition);
+}
+.score-card:hover {
+    border-color: var(--sky-blue);
+    transform: translateY(-3px);
+}
+.score-total {
+    color: var(--sky-blue);
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+.score-label { color: var(--text-muted); font-weight: 500; }
+.score-num { font-weight: 600; color: var(--graphite); }
+
+/* Прогресс-бары во 2 семестре */
+.grade-card-detailed {
+    border-left: 5px solid var(--sky-blue);
+    padding: 1.5rem;
+}
+.custom-progress {
+    height: 8px;
+    background: #edf2f7;
+    border-radius: 10px;
+    margin-top: 5px;
+}
+.bar {
+    background: var(--sky-blue);
+    height: 100%;
+    border-radius: 10px;
+}
+.bar-exam { background: var(--graphite); }
+
+/* --- Игровые сессии (для учителей) --- */
+.session-card {
+    border-left: 5px solid var(--accent-success);
+    padding: 1.2rem;
+}
+.session-title { color: var(--graphite); font-weight: 700; }
+
+/* --- Кнопки и Ссылки --- */
+.btn-action-primary {
+    background: var(--sky-blue);
+    color: var(--white);
+    padding: 10px 25px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 600;
+    transition: var(--transition);
+    display: inline-block;
+}
+.btn-action-primary:hover {
+    background: var(--graphite);
+    color: var(--white);
+}
+
+.btn-action-start {
+    background: var(--graphite);
+    color: var(--white);
+    padding: 7px 20px;
+    border-radius: 8px;
+    text-decoration: none;
     font-size: 0.9rem;
-    transition: 0.3s;
-    padding: 10px 20px;
 }
 
 .btn-logout-minimal:hover {
-    background: #fff5f5;
-    border-radius: 10px;
+    text-decoration: underline !important;
+    opacity: 0.8;
 }
 
-/* ПРАВАЯ ЧАСТЬ - СПИСОК СЕССИЙ */
-.section-title {
-    font-weight: 800;
-    color: var(--graphite);
+/* --- Адаптивность --- */
+
+@media (max-width: 991.98px) {
+    .profile-side-card {
+        margin-bottom: 2rem;
+    }
+
+    .profile-wrapper {
+        padding-top: 1.5rem !important;
+    }
 }
 
-.btn-create-new {
-    background: var(--graphite);
-    color: white;
-    padding: 10px 24px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: 0.3s;
+@media (max-width: 767.98px) {
+    .tabs-navigation-wrapper {
+        display: flex;
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    .btn-tab {
+        flex: 1;
+        padding: 10px 5px;
+        font-size: 0.85rem;
+    }
+
+    .profile-main-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn-action-primary, .btn-action-start {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .score-card {
+        padding: 1rem;
+    }
 }
 
-.btn-create-new:hover {
-    background: #000;
-    color: white;
-    transform: translateY(-2px);
-}
+@media (max-width: 480px) {
+    .btn-tab {
+        font-size: 0.75rem;
+    }
 
-.session-card {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 25px;
-    transition: 0.3s;
-}
+    .profile-wrapper {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 
-.session-card:hover {
-    border-color: var(--sky-blue);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-}
-
-.session-title {
-    font-weight: 700;
-    color: var(--graphite);
-    margin-bottom: 8px;
-}
-
-.session-meta {
-    display: flex;
-    gap: 15px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
-
-.meta-pin {
-    background: #eef2f7;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-weight: 700;
-    color: var(--sky-blue);
-}
-
-/* КНОПКИ ДЕЙСТВИЙ */
-.btn-edit-session {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    background: var(--soft-gray);
-    color: var(--graphite);
-    text-decoration: none;
-    margin-right: 10px;
-    transition: 0.3s;
-}
-
-.btn-edit-session:hover {
-    background: #dee2e6;
-    color: var(--graphite);
-}
-
-.btn-launch-session {
-    display: inline-flex;
-    align-items: center;
-    background: var(--sky-blue);
-    color: white;
-    padding: 12px 25px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: 0.3s;
-}
-
-.btn-launch-session:hover {
-    background: #2980b9;
-    color: white;
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-}
-
-.empty-sessions {
-    background: var(--soft-gray);
-    border: 2px dashed #dee2e6;
-    border-radius: 20px;
-    color: var(--text-muted);
-}
-
-.btn-group .btn.active {
-    background-color: var(--sky-blue) !important;
-    color: white !important;
-    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
-}
-.grade-card {
-    transition: 0.3s;
-}
-.grade-card:hover {
-    transform: scale(1.02);
+    .subject-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
 }

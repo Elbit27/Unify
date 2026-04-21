@@ -99,9 +99,9 @@
     <div class="offcanvas-body">
         <ul class="navbar-nav mobile-nav-list">
             {% if request.user.is_authenticated %}
-                <li class="nav-item d-flex align-items-center mb-4">
-                    <div class="avatar-circle me-3">{{ request.user.username|slice:":1"|upper }}</div>
-                    <span class="fw-bold text-dark"> {{ request.user.username }}</span>
+                <li class="nav-item d-flex align-items-center mb-4 gap-2">
+                    <div class="avatar-circle">{{ request.user.username|slice:":1"|upper }}</div>
+                    <span class="fw-bold text-dark">{{ request.user.username }}</span>
                 </li>
                 <li class="nav-item"><a class="mobile-link" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Профиль</a></li>
                 <li class="nav-item"><a class="mobile-link" href="{% url 'schedule' %}"><i class="bi bi-table me-2"></i>Расписание</a></li>
