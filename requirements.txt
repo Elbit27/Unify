@@ -6,6 +6,7 @@ dj-rest-auth
 django-filter
 whitenoise
 gunicorn
+django-redis
 
 # Google Auth & Security
 django-allauth

@@ -28,3 +28,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function resetGameDirectly(gameId) {
+    // 1. Спрашиваем подтверждение, чтобы не сбросить случайно
+    if (!confirm("Вы уверены, что хотите принудительно сбросить эту игру? Все активные участники будут возвращены в лобби.")) {
+        return;
+    }
+
+    // 2. Определяем протокол (ws или wss для https)
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const socketUrl = protocol + window.location.host + '/ws/game/' + gameId + '/';
+
+    // 3. Создаем временное соединение
+    const tempSocket = new WebSocket(socketUrl);
+
+    tempSocket.onopen = function() {
+        tempSocket.send(JSON.stringify({
+            'action': 'reset_game'
+        }));
+
+        setTimeout(() => {
+            tempSocket.close();
+            window.location.reload();
+        }, 500);
+    };
+
+    tempSocket.onerror = function(err) {
+        console.error("Ошибка при попытке сброса:", err);
+        alert("Не удалось сбросить игру. Возможно, сервер недоступен.");
+    };
+}

@@ -69,6 +69,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        if (data.type === 'GAME_RESET') {
+            alert("Игра сброшена преподавателем. Возвращаемся в начало.");
+            window.location.reload();
+        }
+
+        if (data.type === 'KICKED') {
+            alert(data.reason);
+            window.location.href = '/';
+        }
+
+        if (data.type === 'ERROR') {
+            alert(data.message);
+            window.location.href = '/';
+        }
+
         if (data.type === 'GAME_START') {
             currentIdx = 0;
             playerStats = {};
@@ -184,6 +199,8 @@ function renderTeams(teamsData) {
 function renderLobby(teams, players) {
     const container = document.getElementById('teams-container');
     if (!container) return;
+    const myName = window.userName;
+    const isTeacher = players[myName] && players[myName].is_teacher === true;
 
     container.innerHTML = teams.map(team => {
         const teamPlayers = Object.entries(players)
@@ -191,7 +208,7 @@ function renderLobby(teams, players) {
             .map(([username, info]) => info.display_name);
 
         // Кнопка удаления только для персонала
-        const deleteBtn = window.isStaff
+        const deleteBtn = isTeacher
             ? `<button onclick="deleteTeamRemote(${team.id})" class="btn btn-sm btn-danger opacity-75" title="Удалить команду">×</button>`
             : '';
 
@@ -472,14 +489,16 @@ function showResults(finalScores, teamNames) {
 
                 <div class="list-container">
                     ${sortedPlayers.length > 0 ? sortedPlayers.map(([username, score], index) => {
-                        const displayName = (playersData && playersData[username]) 
-                        ? playersData[username].display_name 
-                        : username;
+                        const playerInfo = playersData && playersData[username];
+                        const displayName = playerInfo ? playerInfo.display_name : username;
+                        const teamId = playerInfo ? String(playerInfo.team_id) : null;
+                        const teamName = (teamId && teamNames && teamNames[teamId]) ? teamNames[teamId] : "Без команды";
+                        
                         return `
                         <div class="player-item-minimal">
                             <div style="display: flex; align-items: center;">
                                 <div class="rank-box-minimal ${index === 0 ? 'gold-minimal' : ''}">${index + 1}</div>
-                                <span style="font-weight: 500;">${displayName}</span>
+                                <span style="font-weight: 500;">${displayName} (${teamName})</span>
                             </div>
                             <span class="pts-minimal">${score} pts</span>
                         </div>

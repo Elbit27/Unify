@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth.decorators import login_required
 from game.models import Game
+from django.core.cache import cache
 
 def frontpage(request):
     return render(request, 'core/frontpage.html')
@@ -15,6 +16,12 @@ def frontpage(request):
 def profile_view(request):
     user = request.user
     user_games = Game.objects.filter(created_by=user).order_by('-created_at')
+    for game in user_games:
+        cache_key = f'game_state_{game.id}'
+        state = cache.get(cache_key)
+        game.is_active_now = state.get('game_active', False) if state else False
+
+
     all_grades = user.grades.all().select_related('subject')
     context = {
         'user': user,

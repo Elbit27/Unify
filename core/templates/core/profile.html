@@ -191,6 +191,11 @@
                                 </div>
                                 <div class="col-md-6 text-md-end">
                                     <a href="{% url 'game-update' game.id %}" class="btn-icon-edit me-2"><i class="bi bi-pencil-square"></i></a>
+                                    {% if game.is_active_now %}
+                                        <button onclick="resetGameDirectly('{{ game.id }}')" class="btn btn-sm btn-outline-danger me-2">
+                                            <i class="bi bi-arrow-clockwise"></i> Сбросить
+                                        </button>
+                                    {% endif %}
                                     <a href="{% url 'play_game' game.id %}" class="btn-action-start">Запустить</a>
                                 </div>
                             </div>
