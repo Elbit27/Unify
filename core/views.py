@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from django.contrib.auth.decorators import login_required
 from game.models import Game
 from django.core.cache import cache
+from account.models import SemesterPlan, SemesterSubject
 
 def frontpage(request):
     return render(request, 'core/frontpage.html')
@@ -15,22 +16,64 @@ def frontpage(request):
 @login_required
 def profile_view(request):
     user = request.user
+
+    grades_sem1 = []
+    grades_sem2 = []
+
+    if user.role == 'student' and user.group:
+        current_course = user.group.current_course
+
+        plan_items = SemesterSubject.objects.filter(
+            plan__group=user.group,
+            plan__course_number=current_course
+        ).select_related('subject', 'plan', 'teacher')
+
+        user_grades = {g.subject_id: g for g in user.grades.all()}
+
+        for item in plan_items:
+            grade_obj = user_grades.get(item.subject.id)
+
+            data = {
+                'subject': item.subject,
+                'teacher': item.teacher,
+                'module_1': grade_obj.module_1 if grade_obj else '-',
+                'module_2': grade_obj.module_2 if grade_obj else '-',
+                'final_exam': grade_obj.final_exam if grade_obj else '-',
+                'total_display': 0
+            }
+
+            if grade_obj:
+                m1 = grade_obj.module_1 or 0
+                m2 = grade_obj.module_2 or 0
+                exam = grade_obj.final_exam or 0
+
+                total = round((m1 * 0.4) + (m2 * 0.4) + (exam * 0.2))
+
+                data.update({
+                    'module_1': int(grade_obj.module_1 if grade_obj.module_1 is not None else 0),
+                    'module_2': int(grade_obj.module_2 if grade_obj.module_2 is not None else 0),
+                    'final_exam': grade_obj.final_exam if grade_obj.final_exam is not None else 0,
+                    'total_display': total
+                })
+
+            if item.plan.semester == 1:
+                grades_sem1.append(data)
+            else:
+                grades_sem2.append(data)
+
+    # Логика с кэшем игр (без изменений)
     user_games = Game.objects.filter(created_by=user).order_by('-created_at')
     for game in user_games:
         cache_key = f'game_state_{game.id}'
         state = cache.get(cache_key)
         game.is_active_now = state.get('game_active', False) if state else False
 
-
-    all_grades = user.grades.all().select_related('subject')
     context = {
         'user': user,
         'games': user_games,
-        'games_count': user_games.count(),
-        'grades_sem1': all_grades.filter(semester=1),
-        'grades_sem2': all_grades.filter(semester=2),
+        'grades_sem1': grades_sem1,
+        'grades_sem2': grades_sem2,
     }
-
     return render(request, 'core/profile.html', context)
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet): # Только чтение

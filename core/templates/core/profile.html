@@ -61,20 +61,13 @@
                     {% endif %}
                 </div>
 
-                <div class="stats-container row g-0 pt-3">
-                    <div class="col-6 stat-item">
-                        <div class="stat-value">{{ games.count }}</div>
-                        <div class="stat-label">Игры</div>
-                    </div>
-                    <div class="col-6 stat-item">
-                        {% if user.role == 'student' and user.group %}
-                            <div class="stat-value">{{ user.group.current_course }}</div>
-                            <div class="stat-label">Курс</div>
-                        {% else %}
-                            <div class="stat-value">{{ user.date_joined|date:"Y" }}</div>
-                            <div class="stat-label">С нами</div>
-                        {% endif %}
-                    </div>
+                <div class="stats-container pt-3 border-top">
+                    {% if user.role == 'student' %}
+                        <div class="text-center">
+                            <div class="stat-value">{{ user.group.current_course|default:"-" }}</div>
+                            <div class="stat-label">КУРС</div>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="profile-actions mt-4 pt-3">
@@ -89,82 +82,80 @@
             {% if user.role == 'student' %}
                 <div class="content-header d-flex justify-content-between align-items-center mb-4">
                     <h3 class="section-title h4 mb-0">Моя успеваемость</h3>
-                    <div class="tabs-navigation-wrapper">
-                        <button class="btn-tab active" id="sem1-tab" data-bs-toggle="tab" data-bs-target="#sem1">1 сем</button>
-                        <button class="btn-tab" id="sem2-tab" data-bs-toggle="tab" data-bs-target="#sem2">2 сем</button>
-                    </div>
+                    <ul class="nav nav-pills tabs-navigation-wrapper" id="semesterTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="btn-tab active" id="sem1-tab" data-bs-toggle="tab" data-bs-target="#sem1_content" type="button" role="tab">1 семестр</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn-tab" id="sem2-tab" data-bs-toggle="tab" data-bs-target="#sem2_content" type="button" role="tab">2 семестр</button>
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="tab-content" id="semesterTabContent">
-                    <div class="tab-pane fade show active" id="sem1">
-                        <div class="row g-3">
-                            {% for grade in grades_sem1 %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="score-card">
-                                    <div class="score-card-header">
-                                        <span class="score-subject" title="{{ grade.subject.name }}">{{ grade.subject.name }}</span>
-                                        <span class="score-total">{{ grade.total_score|floatformat:0 }}</span>
-                                    </div>
-                                    <div class="score-details">
-                                        <div class="score-item">
-                                            <span class="score-label">М1</span>
-                                            <span class="score-num">{{ grade.module_1 }}</span>
-                                        </div>
-                                        <div class="score-item">
-                                            <span class="score-label">М2</span>
-                                            <span class="score-num">{{ grade.module_2 }}</span>
-                                        </div>
-                                        <div class="score-item">
-                                            <span class="score-label">Экз</span>
-                                            <span class="score-num">{{ grade.final_exam }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
+                <div class="tab-content" id="semesterTabsContent">
+                    <div class="tab-pane fade show active" id="sem1_content" role="tabpanel" aria-labelledby="sem1-tab">
+                        <div class="table-responsive card-custom p-3">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Предмет</th>
+                                        <th>Кредиты</th>
+                                        <th>Преподаватель</th>
+                                        <th class="text-center">Мод. 1</th>
+                                        <th class="text-center">Мод. 2</th>
+                                        <th class="text-center">Экзамен</th>
+                                        <th class="text-center">Итого</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in grades_sem1 %}
+                                    <tr>
+                                        <td><strong>{{ item.subject.name }}</strong></td>
+                                        <td><span class="badge bg-light text-dark">{{ item.subject.credits }}</span></td>
+                                        <td><small class="text-muted">{{ item.teacher.get_full_name|default:item.teacher.username }}</small></td>
+                                        <td class="text-center">{{ item.module_1 }}</td>
+                                        <td class="text-center">{{ item.module_2 }}</td>
+                                        <td class="text-center">{{ item.final_exam }}</td>
+                                        <td class="text-center"><span class="badge {% if item.total_display >= 50 %}bg-success{% else %}bg-secondary{% endif %}">{{ item.total_display }}</span></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Предметы в плане на 1 семестр не найдены.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="sem2">
-                        <div class="row g-3">
-                            {% for grade in grades_sem2 %}
-                            <div class="col-md-6">
-                                <div class="grade-card-detailed">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="subject-title mb-0">{{ grade.subject.name }}</h6>
-                                        <span class="subject-badge">{{ grade.total_score|floatformat:0 }} / 100</span>
-                                    </div>
-
-                                    <div class="module-progress-wrapper mt-3">
-                                        <div class="progress-item mb-2">
-                                            <div class="d-flex justify-content-between small text-muted">
-                                                <span>Модуль 1 (40%)</span>
-                                                <span>{{ grade.module_1 }}</span>
-                                            </div>
-                                            <div class="custom-progress"><div class="bar" style="width: {{ grade.module_1 }}%"></div></div>
-                                        </div>
-                                        <div class="progress-item mb-2">
-                                            <div class="d-flex justify-content-between small text-muted">
-                                                <span>Модуль 2 (40%)</span>
-                                                <span>{{ grade.module_2 }}</span>
-                                            </div>
-                                            <div class="custom-progress"><div class="bar" style="width: {{ grade.module_2 }}%"></div></div>
-                                        </div>
-                                        <div class="progress-item">
-                                            <div class="d-flex justify-content-between small text-muted">
-                                                <span>Экзамен (20%)</span>
-                                                <span>{{ grade.final_exam }}</span>
-                                            </div>
-                                            <div class="custom-progress"><div class="bar bar-exam" style="width: {{ grade.final_exam }}%"></div></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% empty %}
-                                <div class="empty-state text-center py-5 w-100">
-                                    <p class="text-muted">Данные за 2 семестр временно отсутствуют</p>
-                                </div>
-                            {% endfor %}
+                    <div class="tab-pane fade" id="sem2_content" role="tabpanel" aria-labelledby="sem2-tab">
+                        <div class="table-responsive card-custom p-3">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Предмет</th>
+                                        <th>Кредиты</th>
+                                        <th>Преподаватель</th>
+                                        <th class="text-center">Мод. 1</th>
+                                        <th class="text-center">Мод. 2</th>
+                                        <th class="text-center">Экзамен</th>
+                                        <th class="text-center">Итого</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in grades_sem2 %}
+                                    <tr>
+                                        <td><strong>{{ item.subject.name }}</strong></td>
+                                        <td><span class="badge bg-light text-dark">{{ item.subject.credits }}</span></td>
+                                        <td><small class="text-muted">{{ item.teacher.get_full_name|default:item.teacher.username }}</small></td>
+                                        <td class="text-center">{{ item.module_1 }}</td>
+                                        <td class="text-center">{{ item.module_2 }}</td>
+                                        <td class="text-center">{{ item.final_exam }}</td>
+                                        <td class="text-center"><span class="badge {% if item.total_display >= 50 %}bg-success{% else %}bg-secondary{% endif %}">{{ item.total_display }}</span></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Предметы в плане на 2 семестр не найдены.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
