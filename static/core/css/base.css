@@ -247,39 +247,49 @@ body {
 /* Убираем стрелочку у ника */
 .dropdown-toggle::after { display: none !important; }
 
+#userMenuOffcanvas {
+    width: 320px !important; /* Делаем ширину как в веб-версии */
+}
+
 /* --- Адаптивность для мобильных устройств --- */
-@media (max-width: 768px) {
-    /* Чтобы текст в шапке не наезжал на иконки */
-    .navbar-brand {
-        font-size: 1rem !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
-    }
-
-    /* Боковая панель на весь экран для удобства */
-    .user-side-panel {
-        width: 100% !important;
-        right: -100% !important;
-        top: 60px !important; /* Уменьшаем отступ под мобильную шапку */
-        height: calc(100vh - 60px) !important;
-    }
-
-    /* Увеличиваем кнопки, чтобы по ним было легко попадать пальцем */
-    .side-card {
-        padding: 18px 20px;
-        font-size: 1.1rem;
-    }
-
-    /* Скрываем имя пользователя на мобилках, оставляем только аватарку */
-    #userDropdown span {
-        display: none;
-    }
-
-    .avatar-circle {
-        margin-right: 0 !important;
+@media (max-width: 400px) {
+    #userMenuOffcanvas {
+        width: 100% !important; /* На совсем маленьких экранах на всю ширину */
     }
 }
 
+#userMenuOffcanvas .side-item {
+    border-bottom: none;
+    margin-bottom: 5px;
+}
 
+#userMenuOffcanvas .side-item i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+#userMenuOffcanvas .side-item:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.highlight-game {
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.offcanvas-body {
+    padding: 20px !important;
+}
+
+#userMenuOffcanvas .card-profile {
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 15px !important;
+}
+
+#userMenuOffcanvas .card-profile .avatar-circle {
+    margin: 0 !important;
+    margin-right: 8px !important;
+    flex-shrink: 0 !important;
+}

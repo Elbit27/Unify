@@ -52,7 +52,7 @@
                 <div class="dropdown-menu dropdown-menu-end user-side-panel" aria-labelledby="userDropdown">
                     <a href="{% url 'profile' %}" class="side-item card-profile">
                         <div class="avatar-circle me-3" style="background: #eee; color: #333;">{{ request.user.username|slice:":1"|upper }}</div>
-                        <span>Профиль</span>
+                        <span>{{ request.user.username }}</span>
                     </a>
 
                     <a href="{% url 'schedule' %}" class="side-item card-action">
@@ -91,35 +91,44 @@
     </div>
 </nav>
 
-<div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userMenuOffcanvas">
-    <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fw-bold">Навигация</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+<div class="offcanvas offcanvas-end border-0" tabindex="-1" id="userMenuOffcanvas" style="background-color: var(--graphite);">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title fw-bold text-white">МЕНЮ</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body">
-        <ul class="navbar-nav mobile-nav-list">
-            {% if request.user.is_authenticated %}
-                <li class="nav-item d-flex align-items-center mb-4 gap-2">
-                    <div class="avatar-circle">{{ request.user.username|slice:":1"|upper }}</div>
-                    <span class="fw-bold text-dark">{{ request.user.username }}</span>
-                </li>
-                <li class="nav-item"><a class="mobile-link" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Профиль</a></li>
-                <li class="nav-item"><a class="mobile-link" href="{% url 'schedule' %}"><i class="bi bi-table me-2"></i>Расписание</a></li>
-                {% if request.user.role == 'teacher' %}
-                <li class="nav-item"><a class="mobile-link" href="{% url 'journal-subjects' %}"><i class="bi bi-book me-2"></i>Журнал</a></li>
-                {% endif %}
+    <div class="offcanvas-body d-flex flex-column gap-2">
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="side-item card-profile d-flex align-items-center gap-2">
+                <div class="avatar-circle me-2" style="background: #eee; color: #333;">{{ request.user.username|slice:":1"|upper }}</div>
+                <span> {{ request.user.username }}</span>
+            </a>
 
-                {% if request.user.role == 'student' %}
-                <li class="nav-item"><a class="mobile-link" href="{% url 'journal-subjects' %}"><i class="bi bi-book me-2"></i>Успеваемость</a></li>
-                <li class="nav-item"><a class="mobile-link game-link" href="{% url 'join_page' %}"><i class="bi bi-controller me-2"></i>Войти в игру</a></li>
-                {% endif %}
+            <a href="{% url 'schedule' %}" class="side-item card-action">
+                <i class="bi bi-table"></i> <span>Расписание</span>
+            </a>
 
-
-                <li class="nav-item mt-3"><a class="mobile-link text-danger border-0" href="/accounts/logout/"><i class="bi bi-box-arrow-right me-2"></i>Выход</a></li>
-            {% else %}
-                <li class="nav-item"><a class="btn btn-primary w-100 btn-auth" href="/accounts/login/">Вход</a></li>
+            {% if request.user.role == 'teacher' %}
+            <a href="{% url 'journal-subjects' %}" class="side-item card-action">
+                <i class="bi bi-book"></i> <span>Журнал</span>
+            </a>
             {% endif %}
-        </ul>
+
+            {% if request.user.role == 'student' %}
+            <a href="{% url 'journal-subjects' %}" class="side-item card-action">
+                <i class="bi bi-book"></i> <span>Успеваемость</span>
+            </a>
+
+            <a href="{% url 'join_page' %}" class="side-item card-action highlight-game">
+                <i class="bi bi-controller"></i> <span>Войти в игру</span>
+            </a>
+            {% endif %}
+
+            <a href="/accounts/logout/" class="side-item card-logout mt-auto">
+                <i class="bi bi-box-arrow-right"></i> <span>Выход</span>
+            </a>
+        {% else %}
+            <a class="btn btn-primary btn-auth w-100" href="/accounts/login/">Вход</a>
+        {% endif %}
     </div>
 </div>
 
